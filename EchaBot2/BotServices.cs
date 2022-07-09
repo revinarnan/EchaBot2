@@ -26,11 +26,22 @@ namespace EchaBot2
                 EndpointKey = configuration["QnAEndpointKey"],
                 Host = configuration["QnAEndpointHostName"]
             });
+
+            //CosmosDbStorage = new CosmosDbPartitionedStorage(
+            //    new CosmosDbPartitionedStorageOptions
+            //    {
+            //        CosmosDbEndpoint = configuration["CosmosDbEndpoint"],
+            //        AuthKey = configuration["CosmosDbAuthKey"],
+            //        DatabaseId = configuration["CosmosDbDatabaseId"],
+            //        ContainerId = configuration["CosmosDbContainerId"],
+            //        CompatibilityMode = false,
+            //    });
         }
 
         public QnAMaker AcademicKb { get; private set; }
         public QnAMaker ChitchatKb { get; private set; }
         public LuisRecognizer LuisIntentRecognizer { get; private set; }
+        //public IStorage CosmosDbStorage { get; set; }
 
         private LuisRecognizer CreateLuisRecognizer(IConfiguration configuration)
         {
@@ -45,8 +56,8 @@ namespace EchaBot2
                 IncludeAPIResults = true,
                 PredictionOptions = new LuisPredictionOptions()
                 {
-                    IncludeAllIntents = true,
-                    IncludeInstanceData = true
+                    IncludeAllIntents = false,
+                    IncludeInstanceData = false
                 }
             };
 

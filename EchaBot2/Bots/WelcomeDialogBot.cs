@@ -16,6 +16,7 @@ namespace EchaBot2.Bots
         {
         }
 
+        // TODO ATUR WELCOME MESSAGE UNTUK USER ONLY
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             var welcomeText = "Halo! Selamat datang di EchaBot.";
@@ -27,7 +28,6 @@ namespace EchaBot2.Bots
                 {
                     await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);
                     await turnContext.SendActivityAsync(MessageFactory.Text(messageText, messageText), cancellationToken);
-                    //await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
                 }
             }
         }

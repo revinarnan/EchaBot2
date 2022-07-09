@@ -8,5 +8,6 @@ namespace EchaBot2
         LuisRecognizer LuisIntentRecognizer { get; }
         QnAMaker AcademicKb { get; }
         QnAMaker ChitchatKb { get; }
+        //IStorage CosmosDbStorage { get; set; }
     }
 }

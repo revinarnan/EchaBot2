@@ -5,6 +5,7 @@
 
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
+using EchaBot2.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Bot.Builder;
@@ -29,7 +30,8 @@ namespace EchaBot2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient().AddControllers().AddNewtonsoftJson();
+            //AddNewtonsoftJson
+            services.AddHttpClient().AddControllers();
 
             // Create the Bot Framework Authentication to be used with the Bot Adapter.
             services.AddSingleton<BotFrameworkAuthentication, ConfigurationBotFrameworkAuthentication>();
@@ -54,6 +56,9 @@ namespace EchaBot2
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
+
+            // Add Handoff Middleware
+            services.AddSingleton<HandoffMiddleware>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, WelcomeDialogBot<MainDialog>>();

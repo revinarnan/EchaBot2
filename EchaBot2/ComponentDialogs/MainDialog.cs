@@ -11,20 +11,18 @@ namespace EchaBot2.ComponentDialogs
 {
     public class MainDialog : ComponentDialog
     {
-        private IBotServices BotServices;
+        private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
 
         public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
         {
-            BotServices = botServices;
+            _botServices = botServices;
             Logger = logger;
 
-            //AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(academicWaterfall);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                //InitialStepAsync,
                 ActStepAsync,
                 FinalStepAsync
             }));
@@ -33,22 +31,17 @@ namespace EchaBot2.ComponentDialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        //private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        //{
-        //    //var messageText = "Silakan mulai bertanya dengan mengetik pertanyaan atau informasi yang ingin kamu dapatkan.";
-        //    var promptMessage = MessageFactory.Text(null, null, InputHints.ExpectingInput);
-        //    return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = promptMessage }, cancellationToken);
-        //}
-
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var luisResult = await BotServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
+            var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
             var topIntent = luisResult.Intents.First().Key;
 
             switch (topIntent)
             {
                 case "Academic":
+                    await ProcessAcademicResponseAsync(stepContext.Context, cancellationToken);
                     return await stepContext.BeginDialogAsync(nameof(AcademicWaterfallDialog), stepContext.Context, cancellationToken);
+                //return await stepContext.EndDialogAsync(null, cancellationToken);
                 case "None":
                     await ShowLuisResult(stepContext.Context, cancellationToken);
                     return await stepContext.EndDialogAsync(null, cancellationToken);
@@ -76,13 +69,36 @@ namespace EchaBot2.ComponentDialogs
         {
             Logger.LogInformation("ProcessChitchatResponseAsync");
 
-            var results = await BotServices.ChitchatKb.GetAnswersAsync(context);
+            var results = await _botServices.ChitchatKb.GetAnswersAsync(context);
 
             if (results.Any())
             {
                 if (results.First().Answer.Equals("No good match found in KB."))
                 {
                     await context.SendActivityAsync(MessageFactory.Text("Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain"), cancellationToken);
+                }
+                else
+                {
+                    await context.SendActivityAsync(MessageFactory.Text(results.First().Answer), cancellationToken);
+                }
+            }
+            else
+            {
+                await context.SendActivityAsync(MessageFactory.Text("Maaf, saya belum bisa menjawab."), cancellationToken);
+            }
+        }
+
+        private async Task ProcessAcademicResponseAsync(ITurnContext context, CancellationToken cancellationToken)
+        {
+            Logger.LogInformation("ProcessAcademicResponseAsync");
+
+            var results = await _botServices.AcademicKb.GetAnswersAsync(context);
+
+            if (results.Any())
+            {
+                if (results.First().Answer.Equals("No good match found in KB."))
+                {
+                    await context.SendActivityAsync(MessageFactory.Text("Maaf, informasi tidak ditemukan. Mohon gunakan kata lain."), cancellationToken);
                 }
                 else
                 {
