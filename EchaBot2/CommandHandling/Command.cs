@@ -22,7 +22,8 @@ namespace EchaBot2.CommandHandling
         AcceptRequest,
         RejectRequest,
         GetHistory,
-        Disconnect
+        Disconnect,
+        Help
     }
 
     /// <summary>

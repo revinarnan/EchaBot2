@@ -66,12 +66,12 @@ namespace EchaBot2.CommandHandling
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.RejectRequest, null, botName).ToString()
                     },
-                    new()
-                    {
-                        Title = Command.CommandToString(Commands.GetHistory),
-                        Type = ActionTypes.ImBack,
-                        Value = new Command(Commands.GetHistory, null, botName).ToString()
-                    },
+                    //new()
+                    //{
+                    //    Title = Command.CommandToString(Commands.GetHistory),
+                    //    Type = ActionTypes.ImBack,
+                    //    Value = new Command(Commands.GetHistory, null, botName).ToString()
+                    //},
                     new()
                     {
                         Title = Command.CommandToString(Commands.Disconnect),

@@ -81,7 +81,7 @@ namespace EchaBot2.CommandHandling
                     // Add the sender's channel/conversation into the list of aggregation channels
                     var isPermittedAggregationChannel = false;
 
-                    if (_permittedAggregationChannels != null && _permittedAggregationChannels.Count > 0)
+                    if (_permittedAggregationChannels is { Count: > 0 })
                     {
                         foreach (var permittedAggregationChannel in _permittedAggregationChannels)
                         {
@@ -245,7 +245,7 @@ namespace EchaBot2.CommandHandling
                     // End the 1:1 conversation(s)
                     var disconnectResults = _messageRouter.Disconnect(sender);
 
-                    if (disconnectResults != null && disconnectResults.Count > 0)
+                    if (disconnectResults is { Count: > 0 })
                     {
                         foreach (var disconnectResult in disconnectResults)
                         {
@@ -255,6 +255,21 @@ namespace EchaBot2.CommandHandling
                         wasHandled = true;
                     }
 
+                    break;
+
+                case Commands.Help:
+                    replyActivity = activity.CreateReply();
+                    replyActivity.Text = "Panduan penggunaan Bot sebagai Admin:\n\n" +
+                                         "1. [Show Options] menampilkan perintah-perintah bagi Bot.\n" +
+                                         "2. [Watch] menjadikan saluran saat ini sebagai saluran agregasi permintaan yang masuk.\n" +
+                                         "3. [Unwatch] menghapus saluran saat ini dari daftar saluran agregasi.\n" +
+                                         "4. [Get Request] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
+                                         "5. [AcceptRequest <user ID>]* menerima permintaan koneksi percakapan dari pengguna yang diberikan.\n" +
+                                         "6. [RejectRequest <user ID>]* menolak permintaan koneksi percakapan dari pengguna yang diberikan.\n" +
+                                         "7. [Disconnect] mengakhiri percakapan saat ini dengan pengguna.\n" +
+                                         "\n*Jika tidak ada ID pengguna yang dimasukkan, bot akan membuat kartu yang bagus dengan tombol terima/tolak karena ada permintaan koneksi yang tertunda.";
+
+                    wasHandled = true;
                     break;
 
                 default:

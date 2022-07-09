@@ -42,18 +42,25 @@ namespace EchaBot2.Bots
 
             //Agent Hero Card
             Command showOptionsCommand = new Command(Commands.ShowOptions);
+            Command helpCommand = new Command(Commands.Help);
 
             HeroCard heroCard = new HeroCard()
             {
-                Title = "Hello!",
-                Subtitle = "I am Intermediator Bot",
-                Text = $"My purpose is to serve as a sample on how to implement the human hand-off. Click/tap the button below or type \"{new Command(Commands.ShowOptions).ToString()}\"",
+                Title = "Halo!",
+                Subtitle = "Saya EchaBot",
+                Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, serta dapat menjadi penghubung bagi staff akademik dengan pengguna. Click/tap the button below or type \"{new Command(Commands.ShowOptions).ToString()}\"",
                 Buttons = new List<CardAction>()
                 {
                     new()
                     {
-                        Title = "Show options",
+                        Title = "Tampilkan Opsi",
                         Value = showOptionsCommand.ToString(),
+                        Type = ActionTypes.ImBack
+                    },
+                    new()
+                    {
+                        Title = "Bantuan",
+                        Value = helpCommand.ToString(),
                         Type = ActionTypes.ImBack
                     }
                 }
