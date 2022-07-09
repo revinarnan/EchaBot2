@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 *.zip
 *.bot
+appsettings.json

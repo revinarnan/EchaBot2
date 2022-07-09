@@ -75,7 +75,7 @@ namespace EchaBot2.Middleware
                 new MicrosoftAppCredentials(Configuration["MicrosoftAppId"], Configuration["MicrosoftAppPassword"]));
 
             // Aggregation channel logging
-            MessageRouter.Logger = new Logging.AggregationChannelLogger(MessageRouter);
+            // MessageRouter.Logger = new Logging.AggregationChannelLogger(MessageRouter);
 
             MessageRouterResultHandler = new MessageRouterResultHandler(MessageRouter);
 

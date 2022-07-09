@@ -39,16 +39,16 @@ namespace EchaBot2.Bots
             await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await UserState.SaveChangesAsync(turnContext, false, cancellationToken);
 
-            //Agent Hero Card
+            // Agent Hero Card
             Command showOptionsCommand = new Command(Commands.ShowOptions);
             Command helpCommand = new Command(Commands.Help);
 
-            HeroCard heroCard = new HeroCard()
+            HeroCard heroCard = new HeroCard
             {
                 Title = "Halo!",
                 Subtitle = "Saya EchaBot",
                 Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, serta dapat menjadi penghubung bagi staff akademik dengan pengguna. Tekan/sentuh tombol di bawah atau ketik \"{new Command(Commands.ShowOptions).ToString()}\"",
-                Buttons = new List<CardAction>()
+                Buttons = new List<CardAction>
                 {
                     new()
                     {
@@ -66,7 +66,7 @@ namespace EchaBot2.Bots
             };
 
             Activity replyActivity = turnContext.Activity.CreateReply();
-            replyActivity.Attachments = new List<Attachment>() { heroCard.ToAttachment() };
+            replyActivity.Attachments = new List<Attachment> { heroCard.ToAttachment() };
 
             // ATUR HERO CARD UNTUK ADMIN ONLY
             if (turnContext.Activity.From.Id.Contains("@"))
