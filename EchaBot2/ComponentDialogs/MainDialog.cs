@@ -35,27 +35,30 @@ namespace EchaBot2.ComponentDialogs
         {
             var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
             var topIntent = luisResult.Intents.First().Key;
-
-            switch (topIntent)
+            if (stepContext.Context.Activity.Text is not ("Yes" or "No") &&
+                !stepContext.Context.Activity.Text.Contains("@"))
             {
-                case "Academic":
-                    await ProcessAcademicResponseAsync(stepContext.Context, cancellationToken);
-                    return await stepContext.BeginDialogAsync(nameof(AcademicWaterfallDialog), stepContext.Context, cancellationToken);
-                //return await stepContext.EndDialogAsync(null, cancellationToken);
-                case "None":
-                    await ShowLuisResult(stepContext.Context, cancellationToken);
-                    return await stepContext.EndDialogAsync(null, cancellationToken);
-                default:
-                    await ProcessChitchatResponseAsync(stepContext.Context, cancellationToken);
-                    return await stepContext.EndDialogAsync(null, cancellationToken);
+                switch (topIntent)
+                {
+                    case "Academic":
+                        await ProcessAcademicResponseAsync(stepContext.Context, cancellationToken);
+                        return await stepContext.BeginDialogAsync(nameof(AcademicWaterfallDialog), null, cancellationToken);
+                    case "None":
+                        await ShowLuisResult(stepContext.Context, cancellationToken);
+                        break;
+                    default:
+                        await ProcessChitchatResponseAsync(stepContext.Context, cancellationToken);
+                        break;
+                }
             }
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Result is UserInfo result)
             {
-                var messageText = "Silakan ketik 'agent' untuk menghubungkan dengan staff akademik. Kamu dapat membatalkannya dengan mengetik 'cancel'.";
+                var messageText = "Silakan ketik 'human' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
                 await stepContext.Context.SendActivityAsync(message, cancellationToken);
             }
