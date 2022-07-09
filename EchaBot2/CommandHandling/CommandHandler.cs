@@ -264,8 +264,8 @@ namespace EchaBot2.CommandHandling
                                          "2. [Watch] menjadikan saluran saat ini sebagai saluran agregasi permintaan yang masuk.\n" +
                                          "3. [Unwatch] menghapus saluran saat ini dari daftar saluran agregasi.\n" +
                                          "4. [Get Request] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
-                                         "5. [AcceptRequest <user ID>]* menerima permintaan koneksi percakapan dari pengguna yang diberikan.\n" +
-                                         "6. [RejectRequest <user ID>]* menolak permintaan koneksi percakapan dari pengguna yang diberikan.\n" +
+                                         "5. [AcceptRequest <user ID>] menerima permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
+                                         "6. [RejectRequest <user ID>] menolak permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
                                          "7. [Disconnect] mengakhiri percakapan saat ini dengan pengguna.\n" +
                                          "\n*Jika tidak ada ID pengguna yang dimasukkan, bot akan membuat kartu yang bagus dengan tombol terima/tolak karena ada permintaan koneksi yang tertunda.";
 

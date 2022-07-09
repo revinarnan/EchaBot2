@@ -31,7 +31,6 @@ namespace EchaBot2.Bots
             UserState = userState;
         }
 
-        // TODO ATUR HERO CARD UNTUK ADMIN ONLY
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             await base.OnTurnAsync(turnContext, cancellationToken);
@@ -48,7 +47,7 @@ namespace EchaBot2.Bots
             {
                 Title = "Halo!",
                 Subtitle = "Saya EchaBot",
-                Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, serta dapat menjadi penghubung bagi staff akademik dengan pengguna. Click/tap the button below or type \"{new Command(Commands.ShowOptions).ToString()}\"",
+                Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, serta dapat menjadi penghubung bagi staff akademik dengan pengguna. Tekan/sentuh tombol di bawah atau ketik \"{new Command(Commands.ShowOptions).ToString()}\"",
                 Buttons = new List<CardAction>()
                 {
                     new()
@@ -69,20 +68,22 @@ namespace EchaBot2.Bots
             Activity replyActivity = turnContext.Activity.CreateReply();
             replyActivity.Attachments = new List<Attachment>() { heroCard.ToAttachment() };
 
-            //if (turnContext.Activity.From.Name == "agent" || turnContext.Activity.From.Name == "You")
-            //{
-            //    await turnContext.SendActivityAsync(replyActivity, cancellationToken);
-            //}
-
-            await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            // ATUR HERO CARD UNTUK ADMIN ONLY
+            if (turnContext.Activity.From.Id.Contains("@"))
+            {
+                await turnContext.SendActivityAsync(replyActivity, cancellationToken);
+            }
         }
 
-        // TODO ATUR DIALOG UNTUK USER ONLY
+        // ATUR DIALOG UNTUK USER ONLY
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             Logger.LogInformation("Running dialog with Message Activity.");
 
-            await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+            if (!turnContext.Activity.From.Id.Contains("@"))
+            {
+                await Dialog.RunAsync(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
+            }
         }
     }
 }

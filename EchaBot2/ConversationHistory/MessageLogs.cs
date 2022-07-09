@@ -76,11 +76,13 @@ namespace EchaBot2.ConversationHistory
         {
             if (_messageLogsTable != null)
             {
+                // TODO
                 // Add to AzureTable
             }
 
             else
             {
+                // TODO
                 // Add to InMemory storage
             }
         }
