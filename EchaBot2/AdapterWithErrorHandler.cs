@@ -15,10 +15,10 @@ namespace Microsoft.BotBuilderSamples
 {
     public class AdapterWithErrorHandler : CloudAdapter
     {
-        public AdapterWithErrorHandler(HandoffMiddleware mw1, BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
+        public AdapterWithErrorHandler(HandoffMiddleware handoffMiddleware, BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
             : base(auth, logger)
         {
-            Use(mw1);
+            Use(handoffMiddleware);
 
             OnTurnError = async (turnContext, exception) =>
             {
