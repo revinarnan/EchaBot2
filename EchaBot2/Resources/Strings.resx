@@ -118,195 +118,195 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AcceptButtonTitle" xml:space="preserve">
-    <value>Accept</value>
+    <value>Terima</value>
   </data>
   <data name="AcceptRejectConnectionHint" xml:space="preserve">
-    <value>Accept or reject the request: Type "{0}" to accept, "{1}" to reject or use the buttons if enabled</value>
+    <value>Menerima atau menolak permintaan: Ketik "{0}" untuk menerima, "{1}" untuk menolak atau gunakan tombol jika diaktifkan</value>
   </data>
   <data name="AddAggregationChannelCommandHint" xml:space="preserve">
-    <value>To set up an aggregation channel, type "{0}"</value>
+    <value>Untuk menyiapkan saluran agregasi, ketik "{0}"</value>
   </data>
   <data name="AggregationChannelAlreadySet" xml:space="preserve">
-    <value>This channel/conversation is already receiving requests</value>
+    <value>Saluran/percakapan ini sudah menerima permintaan</value>
   </data>
   <data name="AggregationChannelRemoved" xml:space="preserve">
-    <value>This channel/conversation will no longer receive requests</value>
+    <value>Saluran/percakapan ini tidak akan menerima permintaan lagi</value>
   </data>
   <data name="AggregationChannelSet" xml:space="preserve">
-    <value>This channel/conversation is now where the requests are aggregated</value>
+    <value>Saluran/percakapan ini sekarang tempat permintaan digabungkan</value>
   </data>
   <data name="AlreadyConnectedWithUser" xml:space="preserve">
-    <value>You are already connected with user "{0}"</value>
+    <value>Anda sudah terhubung dengan pengguna "{0}"</value>
   </data>
   <data name="CommandMenuDescription" xml:space="preserve">
-    <value>Administrative options for controlling the end user bot conversations</value>
+    <value>Opsi administratif untuk mengontrol percakapan end-user bot</value>
   </data>
   <data name="CommandMenuInstructions" xml:space="preserve">
-    <value>Select the command using the buttons below or type the command keyword ("{0}")/bot handle ("@{1}") followed by the command and its parameters (if any), for example: "{2}".</value>
+    <value>Pilih perintah menggunakan tombol di bawah ini atau ketik kata kunci perintah ("{0}")/bot handle ("@{1}") diikuti dengan perintah dan parameternya (jika ada), misalnya: "{2}" .</value>
   </data>
   <data name="CommandMenuTitle" xml:space="preserve">
-    <value>Commands</value>
+    <value>Perintah</value>
   </data>
   <data name="CommandNotRecognized" xml:space="preserve">
-    <value>Command "{0}" not recognized</value>
+    <value>Perintah "{0}" tidak dikenali</value>
   </data>
   <data name="ConnectionRequestMadeButRequestorIsNull" xml:space="preserve">
-    <value>A connection request was made, but the requestor party is null</value>
+    <value>Permintaan koneksi dibuat, tetapi pihak pemohon null</value>
   </data>
   <data name="ConnectionRequestResponseNotAllowed" xml:space="preserve">
-    <value>Sorry, you are not allowed to accept or reject requests</value>
+    <value>Maaf, Anda tidak diperbolehkan menerima atau menolak permintaan</value>
   </data>
   <data name="ConnectionRequestTitle" xml:space="preserve">
-    <value>Assistance request</value>
+    <value>Permintaan bantuan</value>
   </data>
   <data name="ConnectRequestCommandHint" xml:space="preserve">
-    <value>To initiate a conversation with an agent, type "{0}"</value>
+    <value>Untuk memulai percakapan dengan agen, ketik "{0}"</value>
   </data>
   <data name="DeletingAllData" xml:space="preserve">
-    <value>Deleting all data...</value>
+    <value>Menghapus semua data...</value>
   </data>
   <data name="DeletingAllDataWithCommandIssuer" xml:space="preserve">
-    <value>Deleting all data as requested by "0"...</value>
+    <value>Menghapus semua data seperti yang diminta oleh "0"...</value>
   </data>
   <data name="EchoMessage" xml:space="preserve">
-    <value>You said: {0}</value>
+    <value>Anda mengatakan: {0}</value>
   </data>
   <data name="ErrorOccured" xml:space="preserve">
-    <value>An error occurred</value>
+    <value>Terjadi kesalahan</value>
   </data>
   <data name="ErrorOccuredWithResult" xml:space="preserve">
-    <value>An error occurred: {0}</value>
+    <value>Terjadi kesalahan: {0}</value>
   </data>
   <data name="FailedToFindBotOnAggregationChannel" xml:space="preserve">
-    <value>Failed to find the bot instance on aggregation channel "{0}"</value>
+    <value>Gagal menemukan instance bot di saluran agregasi "{0}"</value>
   </data>
   <data name="FailedToFindPendingRequestForUserWithErrorMessage" xml:space="preserve">
-    <value>Failed to find a pending request for user "0": {1}</value>
+    <value>Gagal menemukan permintaan tertunda untuk pengguna "0": {1}</value>
   </data>
   <data name="FailedToForwardMessage" xml:space="preserve">
-    <value>Failed to forward the message</value>
+    <value>Gagal meneruskan pesan</value>
   </data>
   <data name="FailedToRemoveAggregationChannel" xml:space="preserve">
-    <value>Failed to remove aggregation channel</value>
+    <value>Gagal menghapus saluran agregasi</value>
   </data>
   <data name="NoAgentsAvailable" xml:space="preserve">
-    <value>Sorry, there are no agents available right now</value>
+    <value>Maaf, tidak ada agen yang tersedia saat ini</value>
   </data>
   <data name="NoAggregationChannel" xml:space="preserve">
-    <value>No aggregation channel set up</value>
+    <value>Tidak ada saluran agregasi yang disiapkan</value>
   </data>
   <data name="NoPendingRequests" xml:space="preserve">
-    <value>No pending requests</value>
+    <value>Tidak ada permintaan yang tertunda</value>
   </data>
   <data name="NotifyClientConnected" xml:space="preserve">
-    <value>Your request was accepted and you are now chatting with {0}</value>
+    <value>Permintaan Anda diterima dan Anda sekarang mengobrol dengan {0}</value>
   </data>
   <data name="NotifyClientDisconnected" xml:space="preserve">
-    <value>Your conversation with {0} has ended</value>
+    <value>Percakapan Anda dengan {0} telah berakhir</value>
   </data>
   <data name="NotifyClientDuplicateRequest" xml:space="preserve">
-    <value>Your request has already been received, please wait for an agent to respond</value>
+    <value>Permintaan Anda telah diterima, harap tunggu agen untuk merespons</value>
   </data>
   <data name="NotifyClientRequestRejected" xml:space="preserve">
-    <value>Unfortunately your request could not be processed</value>
+    <value>Sayangnya permintaan Anda tidak dapat diproses</value>
   </data>
   <data name="NotifyClientWaitForRequestHandling" xml:space="preserve">
-    <value>Please wait for your request to be accepted</value>
+    <value>Harap tunggu hingga permintaan Anda diterima</value>
   </data>
   <data name="NotifyOwnerConnected" xml:space="preserve">
-    <value>You are now connected to user "{0}"</value>
+    <value>Anda sekarang terhubung ke pengguna "{0}"</value>
   </data>
   <data name="NotifyOwnerDisconnected" xml:space="preserve">
-    <value>You are now disconnected from the conversation with user "{0}"</value>
+    <value>Anda sekarang terputus dari percakapan dengan pengguna "{0}"</value>
   </data>
   <data name="NotifyOwnerRequestRejected" xml:space="preserve">
-    <value>Request from user "{0}" rejected</value>
+    <value>Permintaan dari pengguna "{0}" ditolak</value>
   </data>
   <data name="OptionsCommandHint" xml:space="preserve">
-    <value>To see the available commands, type "{0}"</value>
+    <value>Untuk melihat perintah yang tersedia, ketik "{0}"</value>
   </data>
   <data name="PartyRemoved" xml:space="preserve">
-    <value>Party "{0}" removed</value>
+    <value>Party "{0}" dihapus</value>
   </data>
   <data name="RejectButtonTitle" xml:space="preserve">
-    <value>Reject</value>
+    <value>Tolak</value>
   </data>
   <data name="RequestorDetailsTitle" xml:space="preserve">
-    <value>Requested by user "{0}" on channel "{1}"</value>
+    <value>Diminta oleh pengguna "{0}" di saluran "{1}"</value>
   </data>
   <data name="UserDataDeleted" xml:space="preserve">
-    <value>Data of user "{0}" deleted</value>
+    <value>Data pengguna "{0}" dihapus</value>
   </data>
   <data name="UserNameMissing" xml:space="preserve">
-    <value>User name missing</value>
+    <value>Nama pengguna tidak ditemukan</value>
   </data>
   <data name="AcceptConnectionRequestsCardInstructions" xml:space="preserve">
-    <value>Choose the user whose request to accept</value>
+    <value>Pilih pengguna yang permintaannya diterima</value>
   </data>
   <data name="AcceptConnectionRequestsCardTitle" xml:space="preserve">
-    <value>Accept request</value>
+    <value>Terima permintaan</value>
   </data>
   <data name="ApplyToAll" xml:space="preserve">
-    <value>Apply to all</value>
+    <value>Terapkan ke semua</value>
   </data>
   <data name="Bots" xml:space="preserve">
     <value>Bots</value>
   </data>
   <data name="FailedToFindPendingRequest" xml:space="preserve">
-    <value>Failed to find the pending request</value>
+    <value>Gagal menemukan permintaan yang tertunda</value>
   </data>
   <data name="FailedToRejectPendingRequests" xml:space="preserve">
-    <value>Failed to reject pending requests</value>
+    <value>Gagal menolak permintaan yang tertunda</value>
   </data>
   <data name="InvalidCommand" xml:space="preserve">
-    <value>Invalid command</value>
+    <value>Perintah tidak valid</value>
   </data>
   <data name="InvalidOrMissingCommandParameter" xml:space="preserve">
-    <value>Command parameter invalid or missing</value>
+    <value>Parameter perintah tidak valid atau tidak ditemukan</value>
   </data>
   <data name="NoBotsStored" xml:space="preserve">
-    <value>No bots stored</value>
+    <value>Tidak ada bot yang disimpan</value>
   </data>
   <data name="NoConversations" xml:space="preserve">
-    <value>No conversations</value>
+    <value>Tidak ada percakapan</value>
   </data>
   <data name="NoResults" xml:space="preserve">
-    <value>No results</value>
+    <value>Tidak ada hasil</value>
   </data>
   <data name="NoUsersStored" xml:space="preserve">
-    <value>No users stored</value>
+    <value>Tidak ada pengguna yang disimpan</value>
   </data>
   <data name="PendingRequestsFoundWithCount" xml:space="preserve">
-    <value>{0} pending request(s) found</value>
+    <value>{0} permintaan tertunda ditemukan</value>
   </data>
   <data name="RejectAll" xml:space="preserve">
-    <value>Reject all</value>
+    <value>Tolak semua</value>
   </data>
   <data name="RejectConnectionRequestCardTitle" xml:space="preserve">
-    <value>Reject request</value>
+    <value>Tolak permintaan</value>
   </data>
   <data name="RejectConnectionRequestsCardInstructions" xml:space="preserve">
-    <value>Choose the user whose request to reject</value>
+    <value>Pilih pengguna yang permintaannya ditolak</value>
   </data>
   <data name="RequestorDetailsItem" xml:space="preserve">
-    <value>"{0}" on channel "{1}" ({2})</value>
+    <value>"{0}" di saluran "{1}" ({2})</value>
   </data>
   <data name="Users" xml:space="preserve">
     <value>Users</value>
   </data>
   <data name="RequestorDetailsMissing" xml:space="preserve">
-    <value>Request was made, but the details of the requestor are missing</value>
+    <value>Permintaan telah dibuat, tetapi detail pemohon tidak ada</value>
   </data>
   <data name="ConnectionRequestResultErrorWithResult" xml:space="preserve">
-    <value>A connection request error occurred: {0}</value>
+    <value>Terjadi kesalahan permintaan sambungan: {0}</value>
   </data>
   <data name="ConnectionResultErrorWithResult" xml:space="preserve">
-    <value>A connection error occurred: {0}</value>
+    <value>Terjadi kesalahan sambungan: {0}</value>
   </data>
   <data name="FailedToSetAggregationChannel" xml:space="preserve">
-    <value>Failed to set the aggregation channel: {0}</value>
+    <value>Gagal menyetel saluran agregasi: {0}</value>
   </data>
   <data name="NotPermittedAggregationChannel" xml:space="preserve">
-    <value>{0} is not a permitted aggregation channel</value>
+    <value>{0} bukan saluran agregasi yang diizinkan</value>
   </data>
 </root>
