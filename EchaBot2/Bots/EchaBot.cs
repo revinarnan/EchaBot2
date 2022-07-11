@@ -40,8 +40,6 @@ namespace EchaBot2.Bots
             await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
             await _userState.SaveChangesAsync(turnContext, false, cancellationToken);
 
-
-
             // ATUR HERO CARD UNTUK ADMIN ONLY
             if (turnContext.Activity.From.Id.Contains("@"))
             {

@@ -39,6 +39,7 @@ namespace EchaBot2
             // Create the Bot Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            // TODO GANTI STORAGE
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
             //services.AddSingleton<IStorage, MemoryStorage>();
             var storage = new MemoryStorage();
@@ -59,6 +60,9 @@ namespace EchaBot2
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
+
+            // Register NoAgentsDialog Waterfall
+            services.AddSingleton<NoAgentsDialog>();
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();

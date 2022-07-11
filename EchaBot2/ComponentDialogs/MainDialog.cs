@@ -14,13 +14,14 @@ namespace EchaBot2.ComponentDialogs
         private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
 
-        public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall, ILogger<MainDialog> logger)
+        public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall, NoAgentsDialog noAgentsDialog, ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;
             Logger = logger;
 
             AddDialog(academicWaterfall);
+            AddDialog(noAgentsDialog);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 ActStepAsync,
@@ -62,6 +63,11 @@ namespace EchaBot2.ComponentDialogs
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
                 await stepContext.Context.SendActivityAsync(message, cancellationToken);
             }
+
+            //if (stepContext.Context.Activity.Text == Strings.NoAgentsAvailable)
+            //{
+            //    return await stepContext.BeginDialogAsync(nameof(NoAgentsDialog), null, cancellationToken);
+            //}
 
             // Restart the main dialog with a different message the second time around
             var promptMessage = "Apakah ada yang ingin ditanyakan lagi?";

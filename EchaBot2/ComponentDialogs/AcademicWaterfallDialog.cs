@@ -29,8 +29,6 @@ namespace EchaBot2.ComponentDialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        //COBA DIGANTI TEXT PROMT
-        // TODO
         private async Task<DialogTurnResult> ResponseConfirmationAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Apakah sudah menjawab?") };
@@ -64,7 +62,7 @@ namespace EchaBot2.ComponentDialogs
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }
 
-            var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Bolehkah saya meminta emailmu yang dapat dihubungi?", inputHint: InputHints.IgnoringInput) };
+            var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Silakan masukkan emailmu yang dapat dihubungi", inputHint: InputHints.IgnoringInput) };
 
             return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
         }

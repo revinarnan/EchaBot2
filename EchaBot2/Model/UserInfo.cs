@@ -3,5 +3,6 @@
     public class UserInfo
     {
         public string Email { get; set; }
+        public string Question { get; set; }
     }
 }
