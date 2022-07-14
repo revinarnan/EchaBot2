@@ -76,6 +76,10 @@ namespace EchaBot2
             // Create the bot services (LUIS, QnA) as a singleton.
             services.AddSingleton<IBotServices, BotServices>();
 
+            // Add TranscriptLogger Middleware
+            var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
+            services.AddSingleton(transcriptMiddleware);
+
             // Register AcademicWaterfallDialog.
             services.AddSingleton<AcademicWaterfallDialog>();
 
@@ -84,9 +88,6 @@ namespace EchaBot2
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();
-
-            // Add MessageLogger Middleware
-            services.AddSingleton<MessageLoggerMiddleware>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, WelcomeDialogBot<MainDialog>>();
