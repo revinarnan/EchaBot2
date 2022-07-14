@@ -34,9 +34,9 @@ namespace EchaBot2.Middleware
         {
             if (turnContext.Activity.Type == "message")
             {
-                var dateStamp = DateTime.Today.ToString("dd-MM-yyyy");
+                var dateStamp = DateTime.Today.ToString("ddMMyyyy");
 
-                const int delay = 100;
+                const int delay = 200;
 
                 var logText = $"{turnContext.Activity.From.Name}: {turnContext.Activity.Text}";
                 var fileName = $"{dateStamp}_{turnContext.Activity.Conversation.Id}";

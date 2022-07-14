@@ -22,6 +22,7 @@ namespace EchaBot2.ComponentDialogs
             {
                 ResponseConfirmationAsync,
                 HandoffAgentConfirmationAsync,
+                GetQuestionAsync,
                 GetEmailAsync,
                 FinalStepAsync
             }));
@@ -50,7 +51,7 @@ namespace EchaBot2.ComponentDialogs
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), promptOptions, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> GetEmailAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> GetQuestionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             stepContext.Values[UserInfo] = new UserInfo();
 
@@ -62,6 +63,21 @@ namespace EchaBot2.ComponentDialogs
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }
 
+            var promptOptions = new PromptOptions
+            {
+                Prompt = MessageFactory.Text("Silakan kirim pertanyaanmu disini. " +
+                "Apabila nanti tidak ada staff akademik yang tersedia, pertanyaan akan dijawab melalui email.",
+                inputHint: InputHints.IgnoringInput)
+            };
+
+            return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> GetEmailAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var userInfo = (UserInfo)stepContext.Values[UserInfo];
+            userInfo.Question = (string)stepContext.Result;
+
             var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Silakan masukkan emailmu yang dapat dihubungi", inputHint: InputHints.IgnoringInput) };
 
             return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
@@ -72,7 +88,8 @@ namespace EchaBot2.ComponentDialogs
             var userInfo = (UserInfo)stepContext.Values[UserInfo];
             userInfo.Email = (string)stepContext.Result;
 
-            var message = $"Email kamu adalah {((UserInfo)stepContext.Values[UserInfo]).Email}";
+            var message = $"Email kamu adalah {((UserInfo)stepContext.Values[UserInfo]).Email}, " +
+                          $"dan pertanyaan kamu adalah (\"{((UserInfo)stepContext.Values[UserInfo]).Question}\").";
 
             await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
 

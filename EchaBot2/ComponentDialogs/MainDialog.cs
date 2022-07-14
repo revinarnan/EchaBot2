@@ -14,14 +14,14 @@ namespace EchaBot2.ComponentDialogs
         private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
 
-        public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall, NoAgentsDialog noAgentsDialog, ILogger<MainDialog> logger)
+        public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall,
+            ILogger<MainDialog> logger)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;
             Logger = logger;
 
             AddDialog(academicWaterfall);
-            AddDialog(noAgentsDialog);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 ActStepAsync,
@@ -65,11 +65,6 @@ namespace EchaBot2.ComponentDialogs
 
                 return await stepContext.EndDialogAsync(result, cancellationToken);
             }
-
-            //if (stepContext.Context.Activity.Text == Strings.NoAgentsAvailable)
-            //{
-            //    return await stepContext.BeginDialogAsync(nameof(NoAgentsDialog), null, cancellationToken);
-            //}
 
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }

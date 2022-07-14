@@ -4,5 +4,6 @@
     {
         public string Email { get; set; }
         public string Question { get; set; }
+        public bool IsAnswered { get; set; }
     }
 }
