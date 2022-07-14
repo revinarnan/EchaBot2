@@ -5,7 +5,6 @@
 
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
-using EchaBot2.ConversationHistory;
 using EchaBot2.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -90,7 +89,7 @@ namespace EchaBot2
             services.AddSingleton<HandoffMiddleware>();
 
             // Add MessageLogger Middleware
-            services.AddSingleton<CosmosTranscriptLogger>();
+            services.AddSingleton<TranscriptLoggerMiddleware>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, WelcomeDialogBot<MainDialog>>();

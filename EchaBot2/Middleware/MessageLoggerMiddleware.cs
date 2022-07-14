@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EchaBot2.ConversationHistory
+namespace EchaBot2.Middleware
 {
-    public class CosmosTranscriptLogger : IMiddleware
+    public class MessageLoggerMiddleware : IMiddleware
     {
         private readonly IStorage _storage;
 
@@ -24,7 +24,7 @@ namespace EchaBot2.ConversationHistory
             public string ETag { get; set; } = "*";
         }
 
-        public CosmosTranscriptLogger(IStorage storage)
+        public MessageLoggerMiddleware(IStorage storage)
         {
             _storage = storage;
         }
