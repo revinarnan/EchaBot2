@@ -22,7 +22,6 @@ namespace EchaBot2.Bots
         private BotState _conversationState;
         private BotState _userState;
 
-
         public EchaBot(ILogger<EchaBot<T>> logger,
             BotState conversationState, T dialog, BotState userState)
         {
@@ -81,7 +80,6 @@ namespace EchaBot2.Bots
             Logger.LogInformation("Running dialog with Message Activity.");
 
             // Get the state properties from the turn context.
-
             var conversationStateAccessors = _conversationState.CreateProperty<ConversationData>(nameof(ConversationData));
             //var conversationData = await conversationStateAccessors.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
 

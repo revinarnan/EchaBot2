@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.15.2
 
+using EchaBot2.ConversationHistory;
 using EchaBot2.Middleware;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
@@ -11,13 +12,14 @@ using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Microsoft.BotBuilderSamples
+namespace EchaBot2
 {
     public class AdapterWithErrorHandler : CloudAdapter
     {
-        public AdapterWithErrorHandler(HandoffMiddleware handoffMiddleware, BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
+        public AdapterWithErrorHandler(CosmosTranscriptLogger transcriptLoggerMiddleware, HandoffMiddleware handoffMiddleware, BotFrameworkAuthentication auth, ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
             : base(auth, logger)
         {
+            Use(transcriptLoggerMiddleware);
             Use(handoffMiddleware);
 
             OnTurnError = async (turnContext, exception) =>

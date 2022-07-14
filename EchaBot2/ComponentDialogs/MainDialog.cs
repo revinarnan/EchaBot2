@@ -62,6 +62,8 @@ namespace EchaBot2.ComponentDialogs
                 var messageText = "Silakan ketik 'human' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
                 await stepContext.Context.SendActivityAsync(message, cancellationToken);
+
+                return await stepContext.EndDialogAsync(result, cancellationToken);
             }
 
             //if (stepContext.Context.Activity.Text == Strings.NoAgentsAvailable)
@@ -69,9 +71,7 @@ namespace EchaBot2.ComponentDialogs
             //    return await stepContext.BeginDialogAsync(nameof(NoAgentsDialog), null, cancellationToken);
             //}
 
-            // Restart the main dialog with a different message the second time around
-            var promptMessage = "Apakah ada yang ingin ditanyakan lagi?";
-            return await stepContext.ReplaceDialogAsync(InitialDialogId, promptMessage, cancellationToken);
+            return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
         private async Task ProcessChitchatResponseAsync(ITurnContext context, CancellationToken cancellationToken)

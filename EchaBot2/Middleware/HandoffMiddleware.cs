@@ -1,5 +1,4 @@
 ﻿using EchaBot2.CommandHandling;
-using EchaBot2.ConversationHistory;
 using EchaBot2.MessageRouting;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
@@ -47,11 +46,11 @@ namespace EchaBot2.Middleware
             protected set;
         }
 
-        public MessageLogs MessageLogs
-        {
-            get;
-            protected set;
-        }
+        //public MessageLogs MessageLogs
+        //{
+        //    get;
+        //    protected set;
+        //}
 
         public HandoffMiddleware(IConfiguration configuration)
         {
@@ -88,7 +87,7 @@ namespace EchaBot2.Middleware
                 connectionRequestHandler,
                 GetChannelList(KeyPermittedAggregationChannels));
 
-            MessageLogs = new MessageLogs(connectionString);
+            //MessageLogs = new MessageLogs(connectionString);
         }
 
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken ct)

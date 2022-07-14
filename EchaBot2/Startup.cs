@@ -5,13 +5,16 @@
 
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
+using EchaBot2.ConversationHistory;
 using EchaBot2.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
-using Microsoft.BotBuilderSamples;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +33,26 @@ namespace EchaBot2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var client = new CosmosClientOptions
+            {
+                ConnectionMode = ConnectionMode.Gateway
+            };
+
+            var cosmosConfig = new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions
+            {
+                CosmosDbEndpoint = Configuration.GetValue<string>("CosmosDbEndpoint"),
+                AuthKey = Configuration.GetValue<string>("CosmosDbAuthKey"),
+                DatabaseId = Configuration.GetValue<string>("CosmosDbDatabaseId"),
+                ContainerId = Configuration.GetValue<string>("CosmosDbContainerId"),
+                CosmosClientOptions = client,
+                CompatibilityMode = false,
+            });
+
+            var blobConfig = new BlobsStorage(
+                Configuration.GetValue<string>("AzureTableStorageConnectionString"),
+                Configuration.GetValue<string>("BlobContainerName")
+            );
+
             //AddNewtonsoftJson
             services.AddHttpClient().AddControllers();
 
@@ -39,17 +62,16 @@ namespace EchaBot2
             // Create the Bot Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
-            // TODO GANTI STORAGE
-            // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            //services.AddSingleton<IStorage, MemoryStorage>();
-            var storage = new MemoryStorage();
+            // Register storage
+            services.AddSingleton<IStorage>(blobConfig);
+            services.AddSingleton<IStorage>(cosmosConfig);
 
             // Create the User state. (Used in this bot's Dialog implementation.)
-            var userState = new UserState(storage);
+            var userState = new UserState(blobConfig);
             services.AddSingleton(userState);
 
             // Create the Conversation state. (Used by the Dialog system itself.)
-            var conversationState = new ConversationState(storage);
+            var conversationState = new ConversationState(blobConfig);
             services.AddSingleton(conversationState);
 
             // Create the bot services (LUIS, QnA) as a singleton.
@@ -66,6 +88,9 @@ namespace EchaBot2
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();
+
+            // Add MessageLogger Middleware
+            services.AddSingleton<CosmosTranscriptLogger>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
             services.AddTransient<IBot, WelcomeDialogBot<MainDialog>>();

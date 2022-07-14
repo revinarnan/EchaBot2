@@ -57,7 +57,7 @@ namespace EchaBot2.MessageRouting
         /// </summary>
         /// <param name="connectionRequestResult">The result to handle.</param>
         /// <returns>True, if the result was handled. False, if no action was taken.</returns>
-        protected virtual async Task<bool> HandleConnectionRequestResultAsync(
+        public virtual async Task<bool> HandleConnectionRequestResultAsync(
             ConnectionRequestResult connectionRequestResult)
         {
             var connectionRequest = connectionRequestResult?.ConnectionRequest;
