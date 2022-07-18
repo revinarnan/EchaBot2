@@ -16,11 +16,11 @@ namespace EchaBot2
     public class AdapterWithErrorHandler : CloudAdapter
     {
         public AdapterWithErrorHandler(
-            TranscriptLoggerMiddleware textLoggerMiddleware, HandoffMiddleware handoffMiddleware, BotFrameworkAuthentication auth,
+            /*TranscriptLoggerMiddleware textLoggerMiddleware,*/ HandoffMiddleware handoffMiddleware, BotFrameworkAuthentication auth,
             ILogger<IBotFrameworkHttpAdapter> logger, ConversationState conversationState = default)
             : base(auth, logger)
         {
-            Use(textLoggerMiddleware);
+            //Use(textLoggerMiddleware);
             Use(handoffMiddleware);
 
             OnTurnError = async (turnContext, exception) =>

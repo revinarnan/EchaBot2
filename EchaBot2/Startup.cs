@@ -6,6 +6,7 @@
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
 using EchaBot2.Middleware;
+using EchaBot2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
@@ -14,6 +15,7 @@ using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -52,6 +54,9 @@ namespace EchaBot2
                 Configuration.GetValue<string>("BlobContainerName")
             );
 
+            // Add SQL Server database DbContext
+            services.AddDbContext<ApplicationDbContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Database")));
+
             //AddNewtonsoftJson
             services.AddHttpClient().AddControllers();
 
@@ -81,10 +86,11 @@ namespace EchaBot2
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
+            services.AddSingleton<UserRepository>();
 
             // Add TranscriptLogger Middleware
             var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
-            services.AddSingleton(transcriptMiddleware);
+            //services.AddSingleton(transcriptMiddleware);
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();

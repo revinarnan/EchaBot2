@@ -1,4 +1,4 @@
-﻿using EchaBot2.Model;
+﻿using EchaBot2.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -10,7 +10,7 @@ namespace EchaBot2.ComponentDialogs
     public class AcademicWaterfallDialog : ComponentDialog
     {
         // Define value names for values tracked inside the dialogs.
-        private const string UserInfo = "value-userInfo";
+        private const string EmailQuestion = "value-chatBotEmailQuestions";
 
         public AcademicWaterfallDialog()
             : base(nameof(AcademicWaterfallDialog))
@@ -53,7 +53,7 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> GetQuestionAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            stepContext.Values[UserInfo] = new UserInfo();
+            stepContext.Values[EmailQuestion] = new ChatBotEmailQuestion();
 
             if (!(bool)stepContext.Result)
             {
@@ -75,8 +75,8 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> GetEmailAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var userInfo = (UserInfo)stepContext.Values[UserInfo];
-            userInfo.Question = (string)stepContext.Result;
+            var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
+            emailQuestion.Question = (string)stepContext.Result;
 
             var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Silakan masukkan emailmu yang dapat dihubungi", inputHint: InputHints.IgnoringInput) };
 
@@ -85,15 +85,17 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var userInfo = (UserInfo)stepContext.Values[UserInfo];
-            userInfo.Email = (string)stepContext.Result;
+            var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
+            emailQuestion.Email = (string)stepContext.Result;
+            emailQuestion.Id = stepContext.Context.Activity.Conversation.Id;
+            emailQuestion.IsAnswered = false;
 
-            var message = $"Email kamu adalah {((UserInfo)stepContext.Values[UserInfo]).Email}, " +
-                          $"dan pertanyaan kamu adalah (\"{((UserInfo)stepContext.Values[UserInfo]).Question}\").";
+            var message = $"Email kamu adalah {((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Email}, " +
+                          $"dan pertanyaan kamu adalah (\"{((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Question}\").";
 
             await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
 
-            return await stepContext.EndDialogAsync(userInfo, cancellationToken);
+            return await stepContext.EndDialogAsync(stepContext.Values[EmailQuestion], cancellationToken);
         }
     }
 }

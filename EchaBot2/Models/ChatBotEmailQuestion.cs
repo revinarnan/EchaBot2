@@ -1,6 +1,11 @@
-﻿namespace EchaBot2.Model
+﻿using System;
+using System.Collections.Generic;
+
+#nullable disable
+
+namespace EchaBot2.Models
 {
-    public class UserInfo
+    public partial class ChatBotEmailQuestion
     {
         public string Id { get; set; }
         public string Email { get; set; }

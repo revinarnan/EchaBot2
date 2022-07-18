@@ -1,4 +1,4 @@
-﻿namespace EchaBot2.Model
+﻿namespace EchaBot2.Models
 {
     // Defines a state property used to track conversation data.
     public class ConversationData

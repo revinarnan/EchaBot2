@@ -4,7 +4,7 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio EchoBot v4.15.2
 
 using EchaBot2.CommandHandling;
-using EchaBot2.Model;
+using EchaBot2.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -22,6 +22,7 @@ namespace EchaBot2.Bots
         private BotState _conversationState;
         private BotState _userState;
 
+
         public EchaBot(ILogger<EchaBot<T>> logger,
             BotState conversationState, T dialog, BotState userState)
         {
@@ -34,10 +35,7 @@ namespace EchaBot2.Bots
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             await base.OnTurnAsync(turnContext, cancellationToken);
-
-            // Save any state changes that might have occurred during the turn.
-            await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
-            await _userState.SaveChangesAsync(turnContext, false, cancellationToken);
+            //ChatBotEmailQuestions emailQuestionsObj = new ChatBotEmailQuestions();
 
             // ATUR HERO CARD UNTUK ADMIN ONLY
             if (turnContext.Activity.From.Id.Contains("@"))
@@ -72,9 +70,12 @@ namespace EchaBot2.Bots
                 replyActivity.Attachments = new List<Attachment> { heroCard.ToAttachment() };
                 await turnContext.SendActivityAsync(replyActivity, cancellationToken);
             }
+
+            // Save any state changes that might have occurred during the turn.
+            await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
+            await _userState.SaveChangesAsync(turnContext, false, cancellationToken);
         }
 
-        // ATUR DIALOG UNTUK USER ONLY
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             Logger.LogInformation("Running dialog with Message Activity.");
@@ -83,10 +84,10 @@ namespace EchaBot2.Bots
             var conversationStateAccessors = _conversationState.CreateProperty<ConversationData>(nameof(ConversationData));
             //var conversationData = await conversationStateAccessors.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
 
-            var userStateAccessors = _userState.CreateProperty<UserInfo>(nameof(UserInfo));
-            //var userProfile = await userStateAccessors.GetAsync(turnContext, () => new UserInfo(), cancellationToken);
+            //var userStateAccessors = _userState.CreateProperty<ChatBotEmailQuestions>(nameof(ChatBotEmailQuestions));
+            //var userProfile = await userStateAccessors.GetAsync(turnContext, () => new ChatBotEmailQuestions(), cancellationToken);
 
-
+            // Dialog for user only
             if (!turnContext.Activity.From.Id.Contains("@"))
             {
                 await Dialog.RunAsync(turnContext, _conversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);

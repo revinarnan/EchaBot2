@@ -1,4 +1,4 @@
-﻿using EchaBot2.Model;
+﻿using EchaBot2.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -13,13 +13,17 @@ namespace EchaBot2.ComponentDialogs
     {
         private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
+        private readonly UserState _userState;
+        private readonly UserRepository _userRepository;
 
         public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall,
-            ILogger<MainDialog> logger)
+            ILogger<MainDialog> logger, UserState userState, UserRepository userRepository)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;
             Logger = logger;
+            _userState = userState;
+            _userRepository = userRepository;
 
             AddDialog(academicWaterfall);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -57,11 +61,24 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Result is UserInfo result)
+            var emailQuestionResult = (ChatBotEmailQuestion)stepContext.Result;
+            var emailQuestions = new ChatBotEmailQuestion();
+
+            if (stepContext.Result is ChatBotEmailQuestion result)
             {
                 var messageText = "Silakan ketik 'human' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
                 await stepContext.Context.SendActivityAsync(message, cancellationToken);
+
+                emailQuestions.Id = emailQuestionResult.Id;
+                emailQuestions.Email = emailQuestionResult.Email;
+                emailQuestions.Question = emailQuestionResult.Question;
+                emailQuestions.IsAnswered = emailQuestionResult.IsAnswered;
+
+                _userRepository.InsertEmailQuestion(emailQuestions);
+
+                var accessor = _userState.CreateProperty<ChatBotEmailQuestion>(nameof(ChatBotEmailQuestion));
+                await accessor.SetAsync(stepContext.Context, emailQuestionResult, cancellationToken);
 
                 return await stepContext.EndDialogAsync(result, cancellationToken);
             }
