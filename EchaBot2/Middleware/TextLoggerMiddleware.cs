@@ -18,6 +18,7 @@ namespace EchaBot2.Middleware
         //Class for storing a log of utterances(text of messages) as a list.
         public class MessageLog : IStoreItem
         {
+            public string Date { get; set; }
             // A list of things that users have said to the bot
             public List<string> TextList { get; } = new();
 
@@ -32,7 +33,7 @@ namespace EchaBot2.Middleware
 
         public async Task LogActivityAsync(IActivity activity)
         {
-            if (activity.Type == ActivityTypes.Message && !activity.From.Id.Contains("@"))
+            if (activity.Type == ActivityTypes.Message && !activity.From.Name.Contains("@"))
             {
                 // Preserve message input
                 var logText = $"{activity.From.Name}: {activity.AsMessageActivity().Text}";
@@ -42,8 +43,8 @@ namespace EchaBot2.Middleware
                 if (isMessage)
                 {
                     // Preserve document file name
-                    var dateStamp = DateTime.Today.ToString("ddMMyyyy");
-                    var fileName = $"{dateStamp}_{activity.Conversation.Id}";
+                    var dateStamp = DateTime.Today.ToString("dddd, dd MMMM yyyy hh:mm tt");
+                    var fileName = $"{activity.Conversation.Id}";
 
                     // adjust delay to save in cosmos
                     const int delay = 100;
@@ -66,6 +67,7 @@ namespace EchaBot2.Middleware
                     {
                         // add the current utterance to a new object.
                         logItems = new MessageLog();
+                        logItems.Date = dateStamp;
                         logItems.TextList.Add(logText);
 
                         // Create Dictionary object to hold messages.

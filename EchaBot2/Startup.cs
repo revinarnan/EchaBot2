@@ -76,15 +76,15 @@ namespace EchaBot2
             // Create the bot services (LUIS, QnA) as a singleton.
             services.AddSingleton<IBotServices, BotServices>();
 
-            // Add TranscriptLogger Middleware
-            var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
-            services.AddSingleton(transcriptMiddleware);
-
             // Register AcademicWaterfallDialog.
             services.AddSingleton<AcademicWaterfallDialog>();
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
+
+            // Add TranscriptLogger Middleware
+            var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
+            services.AddSingleton(transcriptMiddleware);
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();
