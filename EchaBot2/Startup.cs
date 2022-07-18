@@ -86,11 +86,11 @@ namespace EchaBot2
 
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
-            services.AddSingleton<UserRepository>();
+            services.AddSingleton<DbUtility>();
 
             // Add TranscriptLogger Middleware
             var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
-            //services.AddSingleton(transcriptMiddleware);
+            services.AddSingleton(transcriptMiddleware);
 
             // Add Handoff Middleware
             services.AddSingleton<HandoffMiddleware>();

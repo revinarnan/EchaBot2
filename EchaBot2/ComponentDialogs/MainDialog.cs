@@ -14,10 +14,10 @@ namespace EchaBot2.ComponentDialogs
         private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
         private readonly UserState _userState;
-        private readonly UserRepository _userRepository;
+        private readonly DbUtility _userRepository;
 
         public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall,
-            ILogger<MainDialog> logger, UserState userState, UserRepository userRepository)
+            ILogger<MainDialog> logger, UserState userState, DbUtility userRepository)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;

@@ -3,11 +3,11 @@ using System;
 
 namespace EchaBot2
 {
-    public class UserRepository
+    public class DbUtility
     {
         public ApplicationDbContext DbContext { get; }
 
-        public UserRepository()
+        public DbUtility()
         {
             DbContext = new ApplicationDbContext();
         }
