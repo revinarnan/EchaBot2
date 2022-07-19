@@ -9,6 +9,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace EchaBot2.Bots
     {
         protected readonly ILogger Logger;
         protected readonly Dialog Dialog;
-        private BotState _conversationState;
-        private BotState _userState;
+        private readonly BotState _conversationState;
+        private readonly BotState _userState;
 
 
         public EchaBot(ILogger<EchaBot<T>> logger,
@@ -80,12 +81,15 @@ namespace EchaBot2.Bots
         {
             Logger.LogInformation("Running dialog with Message Activity.");
 
+            var conversationData = new ConversationData
+            {
+                Timestamp = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt"),
+                ChannelId = turnContext.Activity.ChannelId
+            };
+
             // Get the state properties from the turn context.
             var conversationStateAccessors = _conversationState.CreateProperty<ConversationData>(nameof(ConversationData));
-            //var conversationData = await conversationStateAccessors.GetAsync(turnContext, () => new ConversationData(), cancellationToken);
-
-            //var userStateAccessors = _userState.CreateProperty<ChatBotEmailQuestions>(nameof(ChatBotEmailQuestions));
-            //var userProfile = await userStateAccessors.GetAsync(turnContext, () => new ChatBotEmailQuestions(), cancellationToken);
+            await conversationStateAccessors.SetAsync(turnContext, conversationData, cancellationToken);
 
             // Dialog for user only
             if (!turnContext.Activity.From.Id.Contains("@"))

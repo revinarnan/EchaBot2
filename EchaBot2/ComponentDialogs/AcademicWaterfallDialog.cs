@@ -9,12 +9,15 @@ namespace EchaBot2.ComponentDialogs
 {
     public class AcademicWaterfallDialog : ComponentDialog
     {
+        private readonly DbUtility _dbUtility;
         // Define value names for values tracked inside the dialogs.
         private const string EmailQuestion = "value-chatBotEmailQuestions";
 
-        public AcademicWaterfallDialog()
+        public AcademicWaterfallDialog(DbUtility dbUtility)
             : base(nameof(AcademicWaterfallDialog))
         {
+            _dbUtility = dbUtility;
+
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -39,9 +42,20 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> HandoffAgentConfirmationAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var activity = stepContext.Context.Activity;
+            var chatHistory = new ChatHistory();
+
             if ((bool)stepContext.Result)
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Baik, terima kasih sudah menghubungi Echa. Semoga harimu menyenangkan!"), cancellationToken);
+
+                chatHistory.UserId = activity.From.Id;
+                chatHistory.IsDoneOnBot = true;
+                chatHistory.IsDoneOnEmail = false;
+                chatHistory.IsDoneOnLiveChat = false;
+                chatHistory.ChatHistoryFileName = activity.Conversation.Id;
+
+                _dbUtility.InsertChatHistory(chatHistory);
 
                 return await stepContext.EndDialogAsync(null, cancellationToken);
             }

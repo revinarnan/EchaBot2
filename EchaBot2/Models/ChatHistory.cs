@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 #nullable disable
 
@@ -13,9 +12,9 @@ namespace EchaBot2.Models
         public bool IsDoneOnLiveChat { get; set; }
         public bool IsDoneOnEmail { get; set; }
         public string ChatHistoryFileName { get; set; }
-        public string Date { get; set; }
-        public string Time { get; set; }
-        public string CreatedAt { get; set; }
+        public string Date { get; set; } = DateTime.Now.ToString("MM/dd/yyyy");
+        public string Time { get; set; } = DateTime.Now.ToString("hh:mm:ss tt");
+        public string CreatedAt { get; set; } = DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss tt");
         public string UpdatedAt { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EchaBot2.MessageRouting;
+using EchaBot2.Models;
 using EchaBot2.Resources;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
@@ -17,10 +18,11 @@ namespace EchaBot2.CommandHandling
     /// </summary>
     public class CommandHandler
     {
-        private MessageRouter _messageRouter;
-        private MessageRouterResultHandler _messageRouterResultHandler;
-        private ConnectionRequestHandler _connectionRequestHandler;
-        private IList<string> _permittedAggregationChannels;
+        private readonly MessageRouter _messageRouter;
+        private readonly MessageRouterResultHandler _messageRouterResultHandler;
+        private readonly ConnectionRequestHandler _connectionRequestHandler;
+        private readonly IList<string> _permittedAggregationChannels;
+        private readonly DbUtility _dbUtility;
 
         /// <summary>
         /// Constructor.
@@ -29,18 +31,19 @@ namespace EchaBot2.CommandHandling
         /// <param name="messageRouterResultHandler">A MessageRouterResultHandler instance for
         /// handling possible routing actions such as accepting connection requests.</param>
         /// <param name="connectionRequestHandler">The connection request handler.</param>
+        /// <param name="dbUtility">Save changes in Db</param>
         /// <param name="permittedAggregationChannels">Permitted aggregation channels.
         /// Null list means all channels are allowed.</param>
         public CommandHandler(
             MessageRouter messageRouter,
             MessageRouterResultHandler messageRouterResultHandler,
-            ConnectionRequestHandler connectionRequestHandler,
-            IList<string> permittedAggregationChannels = null)  // TODO SPESIFIKKAN CHANNEL YANG DIJADIKAN AGENT HUB
+            ConnectionRequestHandler connectionRequestHandler, IList<string> permittedAggregationChannels, DbUtility dbUtility)  // TODO SPESIFIKKAN CHANNEL YANG DIJADIKAN AGENT HUB
         {
             _messageRouter = messageRouter;
             _messageRouterResultHandler = messageRouterResultHandler;
             _connectionRequestHandler = connectionRequestHandler;
             _permittedAggregationChannels = permittedAggregationChannels;
+            _dbUtility = dbUtility;
         }
 
         /// <summary>
@@ -251,6 +254,17 @@ namespace EchaBot2.CommandHandling
                         {
                             await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
                         }
+
+                        var chatHistory = new ChatHistory
+                        {
+                            UserId = activity.From.Id,
+                            IsDoneOnBot = true,
+                            IsDoneOnEmail = false,
+                            IsDoneOnLiveChat = true,
+                            ChatHistoryFileName = activity.Conversation.Id
+                        };
+
+                        _dbUtility.InsertChatHistory(chatHistory);
 
                         wasHandled = true;
                     }

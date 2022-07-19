@@ -81,11 +81,14 @@ namespace EchaBot2.Middleware
             var connectionRequestHandler =
                 new ConnectionRequestHandler(GetChannelList(KeyNoDirectConversationsWithChannels));
 
+            DbUtility dbUtility = new();
+
             CommandHandler = new CommandHandler(
                 MessageRouter,
                 MessageRouterResultHandler,
                 connectionRequestHandler,
-                GetChannelList(KeyPermittedAggregationChannels));
+                GetChannelList(KeyPermittedAggregationChannels),
+                dbUtility);
 
             //MessageLogs = new MessageLogs(connectionString);
         }

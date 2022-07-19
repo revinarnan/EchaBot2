@@ -14,16 +14,16 @@ namespace EchaBot2.ComponentDialogs
         private readonly IBotServices _botServices;
         protected readonly ILogger Logger;
         private readonly UserState _userState;
-        private readonly DbUtility _userRepository;
+        private readonly DbUtility _dbUtility;
 
         public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall,
-            ILogger<MainDialog> logger, UserState userState, DbUtility userRepository)
+            ILogger<MainDialog> logger, UserState userState, DbUtility dbUtility)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;
             Logger = logger;
             _userState = userState;
-            _userRepository = userRepository;
+            _dbUtility = dbUtility;
 
             AddDialog(academicWaterfall);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -62,7 +62,6 @@ namespace EchaBot2.ComponentDialogs
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var emailQuestionResult = (ChatBotEmailQuestion)stepContext.Result;
-            var emailQuestions = new ChatBotEmailQuestion();
 
             if (stepContext.Result is ChatBotEmailQuestion result)
             {
@@ -70,12 +69,15 @@ namespace EchaBot2.ComponentDialogs
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
                 await stepContext.Context.SendActivityAsync(message, cancellationToken);
 
-                emailQuestions.Id = emailQuestionResult.Id;
-                emailQuestions.Email = emailQuestionResult.Email;
-                emailQuestions.Question = emailQuestionResult.Question;
-                emailQuestions.IsAnswered = emailQuestionResult.IsAnswered;
+                var emailQuestions = new ChatBotEmailQuestion
+                {
+                    Id = emailQuestionResult.Id,
+                    Email = emailQuestionResult.Email,
+                    Question = emailQuestionResult.Question,
+                    IsAnswered = emailQuestionResult.IsAnswered
+                };
 
-                _userRepository.InsertEmailQuestion(emailQuestions);
+                _dbUtility.InsertEmailQuestion(emailQuestions);
 
                 var accessor = _userState.CreateProperty<ChatBotEmailQuestion>(nameof(ChatBotEmailQuestion));
                 await accessor.SetAsync(stepContext.Context, emailQuestionResult, cancellationToken);

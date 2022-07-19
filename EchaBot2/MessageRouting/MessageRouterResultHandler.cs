@@ -15,7 +15,7 @@ namespace EchaBot2.MessageRouting
     /// </summary>
     public class MessageRouterResultHandler
     {
-        private MessageRouter _messageRouter;
+        private readonly MessageRouter _messageRouter;
 
         public MessageRouterResultHandler(MessageRouter messageRouter)
         {

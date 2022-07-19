@@ -28,5 +28,22 @@ namespace EchaBot2
 
             return status;
         }
+
+        public bool InsertChatHistory(ChatHistory history)
+        {
+            bool status = false;
+            try
+            {
+                DbContext.ChatHistories.Add(history);
+                DbContext.SaveChanges();
+                status = true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return status;
+        }
     }
 }
