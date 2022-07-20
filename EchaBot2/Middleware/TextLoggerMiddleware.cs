@@ -43,8 +43,12 @@ namespace EchaBot2.Middleware
                 if (isMessage)
                 {
                     // Preserve document file name
-                    var dateStamp = DateTime.Today.ToString("dddd, dd MMMM yyyy hh:mm tt");
-                    var fileName = $"{activity.Conversation.Id}";
+                    var dateStamp = DateTime.Today.ToString("dddd, dd MMMM yyyy");
+                    var convId = activity.Conversation.Id;
+                    int index = convId.IndexOf("|", StringComparison.Ordinal);
+                    if (index >= 0)
+                        convId = convId.Substring(0, index);
+                    var fileName = $"{convId}";
 
                     // adjust delay to save in cosmos
                     const int delay = 100;

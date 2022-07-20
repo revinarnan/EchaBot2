@@ -248,6 +248,11 @@ namespace EchaBot2.CommandHandling
                     // End the 1:1 conversation(s)
                     var disconnectResults = _messageRouter.Disconnect(sender);
 
+                    var convId = activity.Conversation.Id;
+                    int index = convId.IndexOf("|", StringComparison.Ordinal);
+                    if (index >= 0)
+                        convId = convId.Substring(0, index);
+
                     if (disconnectResults is { Count: > 0 })
                     {
                         foreach (var disconnectResult in disconnectResults)
@@ -261,7 +266,7 @@ namespace EchaBot2.CommandHandling
                             IsDoneOnBot = true,
                             IsDoneOnEmail = false,
                             IsDoneOnLiveChat = true,
-                            ChatHistoryFileName = activity.Conversation.Id
+                            ChatHistoryFileName = convId
                         };
 
                         _dbUtility.InsertChatHistory(chatHistory);

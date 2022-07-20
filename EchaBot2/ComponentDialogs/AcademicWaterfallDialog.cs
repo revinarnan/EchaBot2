@@ -2,6 +2,7 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,17 +44,23 @@ namespace EchaBot2.ComponentDialogs
         private async Task<DialogTurnResult> HandoffAgentConfirmationAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var activity = stepContext.Context.Activity;
-            var chatHistory = new ChatHistory();
+            var convId = activity.Conversation.Id;
+            var index = convId.IndexOf("|", StringComparison.Ordinal);
+            if (index >= 0)
+                convId = convId.Substring(0, index);
 
             if ((bool)stepContext.Result)
             {
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text("Baik, terima kasih sudah menghubungi Echa. Semoga harimu menyenangkan!"), cancellationToken);
 
-                chatHistory.UserId = activity.From.Id;
-                chatHistory.IsDoneOnBot = true;
-                chatHistory.IsDoneOnEmail = false;
-                chatHistory.IsDoneOnLiveChat = false;
-                chatHistory.ChatHistoryFileName = activity.Conversation.Id;
+                var chatHistory = new ChatHistory
+                {
+                    UserId = activity.From.Id,
+                    IsDoneOnBot = true,
+                    IsDoneOnEmail = false,
+                    IsDoneOnLiveChat = false,
+                    ChatHistoryFileName = convId
+                };
 
                 _dbUtility.InsertChatHistory(chatHistory);
 
@@ -99,15 +106,33 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var activity = stepContext.Context.Activity;
             var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
+
+            var convId = activity.Conversation.Id;
+            var index = convId.IndexOf("|", StringComparison.Ordinal);
+            if (index >= 0)
+                convId = convId.Substring(0, index);
+
             emailQuestion.Email = (string)stepContext.Result;
-            emailQuestion.Id = stepContext.Context.Activity.Conversation.Id;
+            emailQuestion.Id = convId;
             emailQuestion.IsAnswered = false;
 
             var message = $"Email kamu adalah {((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Email}, " +
                           $"dan pertanyaan kamu adalah (\"{((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Question}\").";
 
             await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
+
+            var chatHistory = new ChatHistory //Data disave dulu, supaya bisa diambil dari web dan simpan data terbaru
+            {
+                UserId = activity.From.Id,
+                IsDoneOnBot = true,
+                IsDoneOnEmail = false,
+                IsDoneOnLiveChat = false,
+                ChatHistoryFileName = convId
+            };
+
+            _dbUtility.InsertChatHistory(chatHistory);
 
             return await stepContext.EndDialogAsync(stepContext.Values[EmailQuestion], cancellationToken);
         }
