@@ -6,7 +6,6 @@
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
 using EchaBot2.Middleware;
-using EchaBot2.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
@@ -55,7 +54,7 @@ namespace EchaBot2
             );
 
             // Add SQL Server database DbContext
-            services.AddDbContext<ApplicationDbContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Database")));
+            services.AddDbContext<DbContext>(op => op.UseSqlServer(Configuration.GetConnectionString("Database")));
 
             //AddNewtonsoftJson
             services.AddHttpClient().AddControllers();

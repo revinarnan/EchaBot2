@@ -138,6 +138,11 @@ namespace EchaBot2.Models
 
             modelBuilder.Entity<ChatHistory>(entity =>
             {
+                entity.HasKey(e => e.UserId)
+                    .HasName("PK_dbo.ChatHistories");
+
+                entity.Property(e => e.UserId).HasMaxLength(128);
+
                 entity.Property(e => e.Date).HasMaxLength(15);
 
                 entity.Property(e => e.Time).HasMaxLength(15);

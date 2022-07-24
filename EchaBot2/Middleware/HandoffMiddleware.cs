@@ -46,12 +46,6 @@ namespace EchaBot2.Middleware
             protected set;
         }
 
-        //public MessageLogs MessageLogs
-        //{
-        //    get;
-        //    protected set;
-        //}
-
         public HandoffMiddleware(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -127,7 +121,7 @@ namespace EchaBot2.Middleware
 
                         // Check for cry for help (agent assistance)
                         if (!string.IsNullOrWhiteSpace(activity.Text)
-                            && activity.Text.ToLower().Contains("human"))
+                            && activity.Text.ToLower().Contains("@staff"))
                         {
                             // Create a connection request on behalf of the sender
                             // Note that the returned result must be handled

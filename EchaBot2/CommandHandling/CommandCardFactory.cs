@@ -38,43 +38,37 @@ namespace EchaBot2.CommandHandling
                 {
                     new()
                     {
-                        Title = Command.CommandToString(Commands.Watch),
+                        Title = "Watch",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.Watch, null, botName).ToString()
                     },
                     new()
                     {
-                        Title = Command.CommandToString(Commands.Unwatch),
+                        Title = "Unwatch",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.Unwatch, null, botName).ToString()
                     },
                     new()
                     {
-                        Title = Command.CommandToString(Commands.GetRequests),
+                        Title = "Get Request",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.GetRequests, null, botName).ToString()
                     },
                     new()
                     {
-                        Title = Command.CommandToString(Commands.AcceptRequest),
+                        Title = "Accept Request",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.AcceptRequest, null, botName).ToString()
                     },
                     new()
                     {
-                        Title = Command.CommandToString(Commands.RejectRequest),
+                        Title = "Reject Request",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.RejectRequest, null, botName).ToString()
                     },
-                    //new()
-                    //{
-                    //    Title = Command.CommandToString(Commands.GetHistory),
-                    //    Type = ActionTypes.ImBack,
-                    //    Value = new Command(Commands.GetHistory, null, botName).ToString()
-                    //},
                     new()
                     {
-                        Title = Command.CommandToString(Commands.Disconnect),
+                        Title = "Disconnect",
                         Type = ActionTypes.ImBack,
                         Value = new Command(Commands.Disconnect, null, botName).ToString()
                     }
