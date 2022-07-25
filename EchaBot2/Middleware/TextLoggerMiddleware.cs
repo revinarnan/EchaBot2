@@ -18,6 +18,7 @@ namespace EchaBot2.Middleware
         //Class for storing a log of utterances(text of messages) as a list.
         public class MessageLog : IStoreItem
         {
+            public string ConversationId { get; set; }
             public string Date { get; set; }
             // A list of things that users have said to the bot
             public List<string> TextList { get; } = new();
@@ -71,6 +72,7 @@ namespace EchaBot2.Middleware
                     {
                         // add the current utterance to a new object.
                         logItems = new MessageLog();
+                        logItems.ConversationId = convId;
                         logItems.Date = dateStamp;
                         logItems.TextList.Add(logText);
 

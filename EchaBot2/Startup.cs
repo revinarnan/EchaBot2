@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Bot.Builder;
-using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Azure.Blobs;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
@@ -38,19 +37,24 @@ namespace EchaBot2
                 ConnectionMode = ConnectionMode.Gateway
             };
 
-            var cosmosConfig = new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions
-            {
-                CosmosDbEndpoint = Configuration.GetValue<string>("CosmosDbEndpoint"),
-                AuthKey = Configuration.GetValue<string>("CosmosDbAuthKey"),
-                DatabaseId = Configuration.GetValue<string>("CosmosDbDatabaseId"),
-                ContainerId = Configuration.GetValue<string>("CosmosDbContainerId"),
-                CosmosClientOptions = client,
-                CompatibilityMode = false,
-            });
+            //var cosmosConfig = new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions
+            //{
+            //    CosmosDbEndpoint = Configuration.GetValue<string>("CosmosDbEndpoint"),
+            //    AuthKey = Configuration.GetValue<string>("CosmosDbAuthKey"),
+            //    DatabaseId = Configuration.GetValue<string>("CosmosDbDatabaseId"),
+            //    ContainerId = Configuration.GetValue<string>("CosmosDbContainerId"),
+            //    CosmosClientOptions = client,
+            //    CompatibilityMode = false,
+            //});
 
-            var blobConfig = new BlobsStorage(
+            var stateBlobConfig = new BlobsStorage(
                 Configuration.GetValue<string>("AzureTableStorageConnectionString"),
-                Configuration.GetValue<string>("BlobContainerName")
+                Configuration.GetValue<string>("ConversationStateContainerName")
+            );
+
+            var historyBlobConfig = new BlobsStorage(
+                Configuration.GetValue<string>("AzureTableStorageConnectionString"),
+                Configuration.GetValue<string>("ConversationHistoryContainerName")
             );
 
             // Add SQL Server database DbContext
@@ -66,15 +70,17 @@ namespace EchaBot2
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Register storage
-            services.AddSingleton<IStorage>(blobConfig);
-            services.AddSingleton<IStorage>(cosmosConfig);
+            services.AddSingleton<IStorage>(stateBlobConfig);
+            services.AddSingleton<IStorage>(historyBlobConfig);
+
+            //services.AddSingleton<IStorage>(cosmosConfig);
 
             // Create the User state. (Used in this bot's Dialog implementation.)
-            var userState = new UserState(blobConfig);
+            var userState = new UserState(stateBlobConfig);
             services.AddSingleton(userState);
 
             // Create the Conversation state. (Used by the Dialog system itself.)
-            var conversationState = new ConversationState(blobConfig);
+            var conversationState = new ConversationState(stateBlobConfig);
             services.AddSingleton(conversationState);
 
             // Create the bot services (LUIS, QnA) as a singleton.
@@ -83,12 +89,15 @@ namespace EchaBot2
             // Register AcademicWaterfallDialog.
             services.AddSingleton<AcademicWaterfallDialog>();
 
+            // Register ClosingWaterfallDialog
+            services.AddSingleton<ClosingWaterfallDialog>();
+
             // The MainDialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
             services.AddSingleton<DbUtility>();
 
             // Add TranscriptLogger Middleware
-            var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(cosmosConfig));
+            var transcriptMiddleware = new TranscriptLoggerMiddleware(new TextLoggerMiddleware(historyBlobConfig));
             services.AddSingleton(transcriptMiddleware);
 
             // Add Handoff Middleware

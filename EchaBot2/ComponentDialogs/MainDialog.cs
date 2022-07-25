@@ -17,7 +17,7 @@ namespace EchaBot2.ComponentDialogs
         private readonly DbUtility _dbUtility;
 
         public MainDialog(IBotServices botServices, AcademicWaterfallDialog academicWaterfall,
-            ILogger<MainDialog> logger, UserState userState, DbUtility dbUtility)
+            ILogger<MainDialog> logger, UserState userState, DbUtility dbUtility, ClosingWaterfallDialog closingDialog)
             : base(nameof(MainDialog))
         {
             _botServices = botServices;
@@ -25,6 +25,7 @@ namespace EchaBot2.ComponentDialogs
             _userState = userState;
             _dbUtility = dbUtility;
 
+            AddDialog(closingDialog);
             AddDialog(academicWaterfall);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {

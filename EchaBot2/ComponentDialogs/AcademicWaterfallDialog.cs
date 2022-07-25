@@ -14,11 +14,12 @@ namespace EchaBot2.ComponentDialogs
         // Define value names for values tracked inside the dialogs.
         private const string EmailQuestion = "value-chatBotEmailQuestions";
 
-        public AcademicWaterfallDialog(DbUtility dbUtility)
+        public AcademicWaterfallDialog(DbUtility dbUtility, ClosingWaterfallDialog closingDialog)
             : base(nameof(AcademicWaterfallDialog))
         {
             _dbUtility = dbUtility;
 
+            AddDialog(closingDialog);
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -43,28 +44,9 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task<DialogTurnResult> HandoffAgentConfirmationAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var activity = stepContext.Context.Activity;
-            var convId = activity.Conversation.Id;
-            var index = convId.IndexOf("|", StringComparison.Ordinal);
-            if (index >= 0)
-                convId = convId.Substring(0, index);
-
             if ((bool)stepContext.Result)
             {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Baik, terima kasih sudah menghubungi Echa. Semoga harimu menyenangkan!"), cancellationToken);
-
-                var chatHistory = new ChatHistory
-                {
-                    UserId = activity.From.Id,
-                    IsDoneOnBot = true,
-                    IsDoneOnEmail = false,
-                    IsDoneOnLiveChat = false,
-                    ChatHistoryFileName = convId
-                };
-
-                _dbUtility.InsertChatHistory(chatHistory);
-
-                return await stepContext.EndDialogAsync(null, cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
             }
 
             var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Apakah kamu ingin dihubungkan dengan staff akademik?") };
@@ -78,10 +60,7 @@ namespace EchaBot2.ComponentDialogs
 
             if (!(bool)stepContext.Result)
             {
-                await stepContext.Context.SendActivityAsync(
-                    "Baik, terima kasih sudah menghubungi Echa. Semoga harimu menyenangkan!", cancellationToken: cancellationToken);
-
-                return await stepContext.EndDialogAsync(null, cancellationToken);
+                return await stepContext.BeginDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
             }
 
             var promptOptions = new PromptOptions
