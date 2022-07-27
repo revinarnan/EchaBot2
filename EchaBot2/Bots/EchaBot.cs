@@ -35,7 +35,6 @@ namespace EchaBot2.Bots
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
-
             // HERO CARD for ADMIN ONLY
             if (turnContext.Activity.From.Id.Contains("@"))
             {
