@@ -25,7 +25,7 @@ namespace EchaBot2.Bots
             {
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    // ATUR WELCOME MESSAGE UNTUK USER ONLY
+                    // WELCOME MESSAGE for USER ONLY
                     if (!member.Id.Contains("@"))
                     {
                         await turnContext.SendActivityAsync(MessageFactory.Text(welcomeText, welcomeText), cancellationToken);

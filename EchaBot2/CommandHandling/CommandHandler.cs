@@ -235,10 +235,10 @@ namespace EchaBot2.CommandHandling
 #if DEBUG
                     // We shouldn't respond to command attempts by regular users, but I guess
                     // it's okay when debugging
-                    else
-                    {
-                        replyActivity = activity.CreateReply(Strings.ConnectionRequestResponseNotAllowed);
-                    }
+                    //else
+                    //{
+                    //    replyActivity = activity.CreateReply(Strings.ConnectionRequestResponseNotAllowed);
+                    //}
 #endif
 
                     wasHandled = true;
