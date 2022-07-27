@@ -36,9 +36,8 @@ namespace EchaBot2.Bots
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default)
         {
             await base.OnTurnAsync(turnContext, cancellationToken);
-            //ChatBotEmailQuestions emailQuestionsObj = new ChatBotEmailQuestions();
 
-            // ATUR HERO CARD UNTUK ADMIN ONLY
+            // HERO CARD for ADMIN ONLY
             if (turnContext.Activity.From.Id.Contains("@"))
             {
                 // Agent Hero Card
@@ -49,7 +48,9 @@ namespace EchaBot2.Bots
                 {
                     Title = "Halo!",
                     Subtitle = "Saya EchaBot",
-                    Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, serta dapat menjadi penghubung bagi staff akademik dengan pengguna. Tekan/sentuh tombol di bawah atau ketik \"{new Command(Commands.ShowOptions).ToString()}\"",
+                    Text = $"Tujuan saya adalah sebagai Bot yang memberikan informasi seputar akademik, " +
+                           $"serta dapat menjadi penghubung bagi staff akademik dengan pengguna. " +
+                           $"Tekan/sentuh tombol di bawah atau ketik \"{new Command(Commands.ShowOptions).ToString()}\"",
                     Buttons = new List<CardAction>
                     {
                         new()
