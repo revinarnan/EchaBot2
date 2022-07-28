@@ -1,5 +1,6 @@
 ﻿using EchaBot2.Models;
 using System;
+using System.Threading.Tasks;
 
 namespace EchaBot2
 {
@@ -12,38 +13,30 @@ namespace EchaBot2
             DbContext = new ApplicationDbContext();
         }
 
-        public bool InsertEmailQuestion(ChatBotEmailQuestion emailQuestions)
+        public async Task InsertEmailQuestion(ChatBotEmailQuestion emailQuestions)
         {
-            bool status = false;
             try
             {
                 DbContext.ChatBotEmailQuestions.Add(emailQuestions);
-                DbContext.SaveChanges();
-                status = true;
+                await DbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-
-            return status;
         }
 
-        public bool InsertChatHistory(ChatHistory history)
+        public async Task InsertChatHistory(ChatHistory history)
         {
-            bool status = false;
             try
             {
                 DbContext.ChatHistories.Add(history);
-                DbContext.SaveChanges();
-                status = true;
+                await DbContext.SaveChangesAsync();
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-
-            return status;
         }
     }
 }

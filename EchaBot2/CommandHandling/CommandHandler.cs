@@ -6,6 +6,7 @@ using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.DataStore;
@@ -22,7 +23,7 @@ namespace EchaBot2.CommandHandling
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ConnectionRequestHandler _connectionRequestHandler;
         private readonly IList<string> _permittedAggregationChannels;
-        private readonly DbUtility _dbUtility;
+        private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// Constructor.
@@ -31,19 +32,19 @@ namespace EchaBot2.CommandHandling
         /// <param name="messageRouterResultHandler">A MessageRouterResultHandler instance for
         /// handling possible routing actions such as accepting connection requests.</param>
         /// <param name="connectionRequestHandler">The connection request handler.</param>
-        /// <param name="dbUtility">Save changes in Db</param>
+        /// <param name="context">Save changes in Db</param>
         /// <param name="permittedAggregationChannels">Permitted aggregation channels.
         /// Null list means all channels are allowed.</param>
         public CommandHandler(
             MessageRouter messageRouter,
             MessageRouterResultHandler messageRouterResultHandler,
-            ConnectionRequestHandler connectionRequestHandler, IList<string> permittedAggregationChannels, DbUtility dbUtility)  // TODO SPESIFIKKAN CHANNEL YANG DIJADIKAN AGENT HUB
+            ConnectionRequestHandler connectionRequestHandler, IList<string> permittedAggregationChannels, ApplicationDbContext context)
         {
             _messageRouter = messageRouter;
             _messageRouterResultHandler = messageRouterResultHandler;
             _connectionRequestHandler = connectionRequestHandler;
             _permittedAggregationChannels = permittedAggregationChannels;
-            _dbUtility = dbUtility;
+            _context = context;
         }
 
         /// <summary>
@@ -220,6 +221,26 @@ namespace EchaBot2.CommandHandling
                             var requestorConversationAccount =
                                 new ConversationAccount(null, null, command.Parameters[1]);
 
+                            // If connection request accepted, store in db
+                            if (doAccept)
+                            {
+                                var convId = requestorConversationAccount.Id;
+                                int index = convId.IndexOf("|", StringComparison.Ordinal);
+                                if (index >= 0)
+                                    convId = convId.Substring(0, index);
+
+                                var chatHistoryInDb = _context.ChatHistories.Single(c => c.ChatHistoryFileName == convId);
+                                var emailQuestionInDb = _context.ChatBotEmailQuestions.Single(e => e.Id == convId);
+
+                                if (chatHistoryInDb != null && emailQuestionInDb != null)
+                                {
+                                    emailQuestionInDb.IsAnswered = true;
+                                    chatHistoryInDb.IsDoneOnLiveChat = true;
+
+                                    await _context.SaveChangesAsync();
+                                }
+                            }
+
                             var messageRouterResult =
                                 await _connectionRequestHandler.AcceptOrRejectRequestAsync(
                                     _messageRouter, _messageRouterResultHandler, sender, doAccept,
@@ -248,28 +269,12 @@ namespace EchaBot2.CommandHandling
                     // End the 1:1 conversation(s)
                     var disconnectResults = _messageRouter.Disconnect(sender);
 
-                    var convId = activity.Conversation.Id;
-                    int index = convId.IndexOf("|", StringComparison.Ordinal);
-                    if (index >= 0)
-                        convId = convId.Substring(0, index);
-
                     if (disconnectResults is { Count: > 0 })
                     {
                         foreach (var disconnectResult in disconnectResults)
                         {
                             await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
                         }
-
-                        var chatHistory = new ChatHistory
-                        {
-                            UserId = activity.From.Id,
-                            IsDoneOnBot = true,
-                            IsDoneOnEmail = false,
-                            IsDoneOnLiveChat = true,
-                            ChatHistoryFileName = convId
-                        };
-
-                        _dbUtility.InsertChatHistory(chatHistory);
 
                         wasHandled = true;
                     }

@@ -55,7 +55,7 @@ namespace EchaBot2.ComponentDialogs
                     ChatHistoryFileName = convId
                 };
 
-                _dbUtility.InsertChatHistory(chatHistory);
+                await _dbUtility.InsertChatHistory(chatHistory);
 
                 await stepContext.CancelAllDialogsAsync(cancellationToken);
                 return await stepContext.EndDialogAsync(null, cancellationToken);

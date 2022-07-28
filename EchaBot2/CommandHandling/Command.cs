@@ -1,4 +1,5 @@
-﻿using Microsoft.Bot.Schema;
+﻿using EchaBot2.Models;
+using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,8 @@ namespace EchaBot2.CommandHandling
     {
         public const string CommandKeyword = "command"; // Used if the channel does not support mentions
         public const string CommandParameterAll = "*";
+        public string RecipientConvId;
+        private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// The actual command such as "watch" or "unwatch".
@@ -64,6 +67,7 @@ namespace EchaBot2.CommandHandling
         /// Constructor.
         /// </summary>
         /// <param name="baseCommand">The actual command.</param>
+        /// <param name="context">insert data in db</param>
         /// <param name="parameters">The command parameters.</param>
         /// <param name="botName">The bot name (optional).</param>
         public Command(Commands baseCommand, string[] parameters = null, string botName = null)
@@ -74,6 +78,7 @@ namespace EchaBot2.CommandHandling
             }
 
             BaseCommand = baseCommand;
+            _context = new ApplicationDbContext();
 
             if (parameters != null)
             {

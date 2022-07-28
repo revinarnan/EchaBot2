@@ -51,7 +51,7 @@ namespace EchaBot2.Middleware
                         convId = convId.Substring(0, index);
                     var fileName = $"{convId}";
 
-                    // adjust delay to save in cosmos
+                    // adjust delay to save in storage
                     const int delay = 100;
 
                     MessageLog logItems;

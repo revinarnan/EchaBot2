@@ -68,7 +68,6 @@ namespace EchaBot2.ComponentDialogs
             {
                 var messageText = "Silakan ketik '@staff' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
                 var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
-                await stepContext.Context.SendActivityAsync(message, cancellationToken);
 
                 var emailQuestions = new ChatBotEmailQuestion
                 {
@@ -78,8 +77,9 @@ namespace EchaBot2.ComponentDialogs
                     IsAnswered = emailQuestionResult.IsAnswered
                 };
 
-                _dbUtility.InsertEmailQuestion(emailQuestions);
+                await _dbUtility.InsertEmailQuestion(emailQuestions);
 
+                await stepContext.Context.SendActivityAsync(message, cancellationToken);
                 var accessor = _userState.CreateProperty<ChatBotEmailQuestion>(nameof(ChatBotEmailQuestion));
                 await accessor.SetAsync(stepContext.Context, emailQuestionResult, cancellationToken);
 

@@ -1,5 +1,6 @@
 ﻿using EchaBot2.CommandHandling;
 using EchaBot2.MessageRouting;
+using EchaBot2.Models;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
@@ -75,16 +76,14 @@ namespace EchaBot2.Middleware
             var connectionRequestHandler =
                 new ConnectionRequestHandler(GetChannelList(KeyNoDirectConversationsWithChannels));
 
-            DbUtility dbUtility = new();
+            ApplicationDbContext context = new();
 
             CommandHandler = new CommandHandler(
                 MessageRouter,
                 MessageRouterResultHandler,
                 connectionRequestHandler,
                 GetChannelList(KeyPermittedAggregationChannels),
-                dbUtility);
-
-            //MessageLogs = new MessageLogs(connectionString);
+                context);
         }
 
         public async Task OnTurnAsync(ITurnContext context, NextDelegate next, CancellationToken ct)

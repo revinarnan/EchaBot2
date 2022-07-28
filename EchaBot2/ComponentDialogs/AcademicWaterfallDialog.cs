@@ -97,11 +97,6 @@ namespace EchaBot2.ComponentDialogs
             emailQuestion.Id = convId;
             emailQuestion.IsAnswered = false;
 
-            var message = $"Email kamu adalah {((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Email}, " +
-                          $"dan pertanyaan kamu adalah (\"{((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Question}\").";
-
-            await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
-
             var chatHistory = new ChatHistory //Data disave dulu, supaya bisa diambil dari web dan simpan data terbaru
             {
                 UserId = activity.From.Id,
@@ -111,7 +106,12 @@ namespace EchaBot2.ComponentDialogs
                 ChatHistoryFileName = convId
             };
 
-            _dbUtility.InsertChatHistory(chatHistory);
+            await _dbUtility.InsertChatHistory(chatHistory);
+
+            var message = $"Email kamu adalah {((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Email}, " +
+                          $"dan pertanyaan kamu adalah (\"{((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Question}\").";
+
+            await stepContext.Context.SendActivityAsync(message, cancellationToken: cancellationToken);
 
             return await stepContext.EndDialogAsync(stepContext.Values[EmailQuestion], cancellationToken);
         }
