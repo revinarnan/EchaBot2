@@ -60,7 +60,7 @@ namespace EchaBot2.ComponentDialogs
 
             if (!(bool)stepContext.Result)
             {
-                return await stepContext.BeginDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
             }
 
             var promptOptions = new PromptOptions

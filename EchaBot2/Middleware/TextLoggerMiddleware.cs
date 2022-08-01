@@ -34,7 +34,7 @@ namespace EchaBot2.Middleware
 
         public async Task LogActivityAsync(IActivity activity)
         {
-            if (activity.Type == ActivityTypes.Message && !activity.From.Name.Contains("@"))
+            if (activity.Type is ActivityTypes.Message or ActivityTypes.Handoff)
             {
                 // Preserve message input
                 var logText = $"{activity.From.Name}: {activity.AsMessageActivity().Text}";
