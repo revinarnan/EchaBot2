@@ -49,7 +49,8 @@ namespace EchaBot2.ComponentDialogs
                 return await stepContext.ReplaceDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
             }
 
-            var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Apakah kamu ingin dihubungkan dengan staff akademik?") };
+            var promptMessage = MessageFactory.Text("Apakah kamu ingin dihubungkan dengan staff akademik?");
+            var promptOptions = new PromptOptions { Prompt = promptMessage };
 
             return await stepContext.PromptAsync(nameof(ConfirmPrompt), promptOptions, cancellationToken);
         }
@@ -63,12 +64,9 @@ namespace EchaBot2.ComponentDialogs
                 return await stepContext.ReplaceDialogAsync(nameof(ClosingWaterfallDialog), null, cancellationToken);
             }
 
-            var promptOptions = new PromptOptions
-            {
-                Prompt = MessageFactory.Text("Silakan kirim pertanyaanmu disini. " +
-                "Apabila nanti tidak ada staff akademik yang tersedia, pertanyaan akan dijawab melalui email.",
-                inputHint: InputHints.IgnoringInput)
-            };
+            var promptMessage = MessageFactory.Text("Silakan kirim pertanyaanmu disini. " +
+                                                    "Apabila nanti tidak ada staff akademik yang tersedia, pertanyaan akan dijawab melalui email.");
+            var promptOptions = new PromptOptions { Prompt = promptMessage };
 
             return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
         }
@@ -78,7 +76,8 @@ namespace EchaBot2.ComponentDialogs
             var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
             emailQuestion.Question = (string)stepContext.Result;
 
-            var promptOptions = new PromptOptions { Prompt = MessageFactory.Text("Silakan masukkan emailmu yang dapat dihubungi", inputHint: InputHints.IgnoringInput) };
+            var promptMessage = MessageFactory.Text("Silakan masukkan emailmu yang dapat dihubungi", inputHint: InputHints.ExpectingInput);
+            var promptOptions = new PromptOptions { Prompt = promptMessage };
 
             return await stepContext.PromptAsync(nameof(TextPrompt), promptOptions, cancellationToken);
         }
@@ -97,7 +96,7 @@ namespace EchaBot2.ComponentDialogs
             emailQuestion.Id = convId;
             emailQuestion.IsAnswered = false;
 
-            var chatHistory = new ChatHistory //Data disave dulu, supaya bisa diambil dari web dan simpan data terbaru
+            var chatHistory = new ChatHistory
             {
                 UserId = activity.From.Id,
                 IsDoneOnBot = true,

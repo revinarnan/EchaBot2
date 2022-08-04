@@ -67,7 +67,7 @@ namespace EchaBot2.ComponentDialogs
             if (stepContext.Result is ChatBotEmailQuestion result)
             {
                 var messageText = "Silakan ketik '@staff' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
-                var message = MessageFactory.Text(messageText, null, InputHints.ExpectingInput);
+                var message = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
 
                 var emailQuestions = new ChatBotEmailQuestion
                 {
