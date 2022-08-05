@@ -250,37 +250,38 @@ namespace EchaBot2.CommandHandling
                     var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
                     var disconnectResults = _messageRouter.Disconnect(sender);
 
-                    var convId = connectionReference.ConversationReference2.Conversation.Id;
-                    var userId = connectionReference.ConversationReference2.User.Id;
-                    var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId);
-                    var emailQuestionInDb = await _dbUtility.DbContext.ChatBotEmailQuestions.SingleOrDefaultAsync(e => e.Id == convId);
-
-                    // if data exist in db, update value
-                    if (chatHistoryInDb != null && emailQuestionInDb != null)
-                    {
-                        emailQuestionInDb.IsAnswered = true;
-                        chatHistoryInDb.IsDoneOnLiveChat = true;
-
-                        await _dbUtility.SaveChangesAsync();
-                    }
-
-                    // if data didn't exist in db, create new record
-                    if (chatHistoryInDb == null)
-                    {
-                        var chatHistory = new ChatHistory
-                        {
-                            UserId = userId,
-                            IsDoneOnBot = false,
-                            IsDoneOnEmail = false,
-                            IsDoneOnLiveChat = true,
-                            ChatHistoryFileName = convId
-                        };
-
-                        await _dbUtility.InsertChatHistory(chatHistory);
-                    }
-
                     if (disconnectResults is { Count: > 0 })
                     {
+                        var convId = connectionReference.ConversationReference2.Conversation.Id;
+                        var userId = connectionReference.ConversationReference2.User.Id;
+
+                        var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId);
+                        var emailQuestionInDb = await _dbUtility.DbContext.ChatBotEmailQuestions.SingleOrDefaultAsync(e => e.Id == convId);
+
+                        // if data exist in db, update value
+                        if (chatHistoryInDb != null && emailQuestionInDb != null)
+                        {
+                            emailQuestionInDb.IsAnswered = true;
+                            chatHistoryInDb.IsDoneOnLiveChat = true;
+
+                            await _dbUtility.SaveChangesAsync();
+                        }
+
+                        // if data didn't exist in db, create new record
+                        if (chatHistoryInDb == null)
+                        {
+                            var chatHistory = new ChatHistory
+                            {
+                                UserId = userId,
+                                IsDoneOnBot = false,
+                                IsDoneOnEmail = false,
+                                IsDoneOnLiveChat = true,
+                                ChatHistoryFileName = convId
+                            };
+
+                            await _dbUtility.InsertChatHistory(chatHistory);
+                        }
+
                         foreach (var disconnectResult in disconnectResults)
                         {
                             await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
