@@ -3,10 +3,10 @@ using EchaBot2.Models;
 using EchaBot2.Resources;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.DataStore;
@@ -23,7 +23,7 @@ namespace EchaBot2.CommandHandling
         private readonly MessageRouterResultHandler _messageRouterResultHandler;
         private readonly ConnectionRequestHandler _connectionRequestHandler;
         private readonly IList<string> _permittedAggregationChannels;
-        private readonly ApplicationDbContext _context;
+        private readonly DbUtility _dbUtility;
 
         /// <summary>
         /// Constructor.
@@ -38,13 +38,13 @@ namespace EchaBot2.CommandHandling
         public CommandHandler(
             MessageRouter messageRouter,
             MessageRouterResultHandler messageRouterResultHandler,
-            ConnectionRequestHandler connectionRequestHandler, IList<string> permittedAggregationChannels, ApplicationDbContext context)
+            ConnectionRequestHandler connectionRequestHandler, IList<string> permittedAggregationChannels, DbUtility dbUtility)
         {
             _messageRouter = messageRouter;
             _messageRouterResultHandler = messageRouterResultHandler;
             _connectionRequestHandler = connectionRequestHandler;
             _permittedAggregationChannels = permittedAggregationChannels;
-            _context = context;
+            _dbUtility = dbUtility;
         }
 
         /// <summary>
@@ -221,26 +221,6 @@ namespace EchaBot2.CommandHandling
                             var requestorConversationAccount =
                                 new ConversationAccount(null, null, command.Parameters[1]);
 
-                            // If connection request accepted, store in db
-                            if (doAccept)
-                            {
-                                var convId = requestorConversationAccount.Id;
-                                int index = convId.IndexOf("|", StringComparison.Ordinal);
-                                if (index >= 0)
-                                    convId = convId.Substring(0, index);
-
-                                var chatHistoryInDb = _context.ChatHistories.Single(c => c.ChatHistoryFileName == convId);
-                                var emailQuestionInDb = _context.ChatBotEmailQuestions.Single(e => e.Id == convId);
-
-                                if (chatHistoryInDb != null && emailQuestionInDb != null)
-                                {
-                                    emailQuestionInDb.IsAnswered = true;
-                                    chatHistoryInDb.IsDoneOnLiveChat = true;
-
-                                    await _context.SaveChangesAsync();
-                                }
-                            }
-
                             var messageRouterResult =
                                 await _connectionRequestHandler.AcceptOrRejectRequestAsync(
                                     _messageRouter, _messageRouterResultHandler, sender, doAccept,
@@ -267,7 +247,37 @@ namespace EchaBot2.CommandHandling
 
                 case Commands.Disconnect:
                     // End the 1:1 conversation(s)
+                    var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
                     var disconnectResults = _messageRouter.Disconnect(sender);
+
+                    var convId = connectionReference.ConversationReference2.Conversation.Id;
+                    var userId = connectionReference.ConversationReference2.User.Id;
+                    var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId);
+                    var emailQuestionInDb = await _dbUtility.DbContext.ChatBotEmailQuestions.SingleOrDefaultAsync(e => e.Id == convId);
+
+                    // if data exist in db, update value
+                    if (chatHistoryInDb != null && emailQuestionInDb != null)
+                    {
+                        emailQuestionInDb.IsAnswered = true;
+                        chatHistoryInDb.IsDoneOnLiveChat = true;
+
+                        await _dbUtility.SaveChangesAsync();
+                    }
+
+                    // if data didn't exist in db, create new record
+                    if (chatHistoryInDb == null)
+                    {
+                        var chatHistory = new ChatHistory
+                        {
+                            UserId = userId,
+                            IsDoneOnBot = false,
+                            IsDoneOnEmail = false,
+                            IsDoneOnLiveChat = true,
+                            ChatHistoryFileName = convId
+                        };
+
+                        await _dbUtility.InsertChatHistory(chatHistory);
+                    }
 
                     if (disconnectResults is { Count: > 0 })
                     {
@@ -283,13 +293,13 @@ namespace EchaBot2.CommandHandling
 
                 case Commands.Help:
                     replyActivity = activity.CreateReply();
-                    replyActivity.Text = "Panduan penggunaan Bot sebagai Admin:\n\n" +
-                                         "1. [Show Options] menampilkan perintah-perintah bagi Bot.\n" +
+                    replyActivity.Text = "Penjelasan perintah Bot sebagai Admin:\n\n" +
+                                         "1. [ShowOptions] menampilkan perintah-perintah bagi Bot.\n" +
                                          "2. [Watch] menjadikan saluran saat ini sebagai saluran agregasi permintaan yang masuk.\n" +
                                          "3. [Unwatch] menghapus saluran saat ini dari daftar saluran agregasi.\n" +
-                                         "4. [Get Request] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
-                                         "5. [Accept Request <user ID>] menerima permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
-                                         "6. [Reject Request <user ID>] menolak permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
+                                         "4. [GetRequests] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
+                                         "5. [AcceptRequest <user ID>] menerima permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
+                                         "6. [RejectRequest <user ID>] menolak permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
                                          "7. [Disconnect] mengakhiri percakapan saat ini dengan pengguna.\n" +
                                          "\n*Jika tidak ada ID pengguna yang dimasukkan, bot akan membuat kartu yang bagus dengan tombol terima/tolak karena ada permintaan koneksi yang tertunda.";
 

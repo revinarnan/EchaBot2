@@ -217,7 +217,7 @@
     <value>Anda sekarang terhubung ke pengguna "{0}"</value>
   </data>
   <data name="NotifyOwnerDisconnected" xml:space="preserve">
-    <value>Anda sekarang terputus dari percakapan dengan pengguna "{0}". Jangan lupa ketik 'command Unwatch' jika ingin beralih ke halaman lain</value>
+    <value>Anda sekarang terputus dari percakapan dengan pengguna "{0}"</value>
   </data>
   <data name="NotifyOwnerRequestRejected" xml:space="preserve">
     <value>Permintaan dari pengguna "{0}" ditolak</value>
@@ -308,5 +308,8 @@
   </data>
   <data name="NotPermittedAggregationChannel" xml:space="preserve">
     <value>{0} bukan saluran agregasi yang diizinkan</value>
+  </data>
+  <data name="NotifyOwnerSuggestedAction" xml:space="preserve">
+    <value>Jangan lupa ketik "command Unwatch" jika ingin beralih ke halaman lain atau "command AcceptRequest" untuk menerima permintaan baru</value>
   </data>
 </root>

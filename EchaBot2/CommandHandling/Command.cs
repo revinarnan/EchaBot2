@@ -1,5 +1,4 @@
-﻿using EchaBot2.Models;
-using Microsoft.Bot.Schema;
+﻿using Microsoft.Bot.Schema;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -33,8 +32,6 @@ namespace EchaBot2.CommandHandling
     {
         public const string CommandKeyword = "command"; // Used if the channel does not support mentions
         public const string CommandParameterAll = "*";
-        public string RecipientConvId;
-        private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// The actual command such as "watch" or "unwatch".
@@ -78,7 +75,6 @@ namespace EchaBot2.CommandHandling
             }
 
             BaseCommand = baseCommand;
-            _context = new ApplicationDbContext();
 
             if (parameters != null)
             {

@@ -152,15 +152,7 @@ namespace EchaBot2.Models
             {
                 entity.Property(e => e.Date).HasMaxLength(15);
 
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(255);
-
                 entity.Property(e => e.Time).HasMaxLength(15);
-
-                entity.Property(e => e.UrlClient).IsRequired();
-
-                entity.Property(e => e.UrlKb).IsRequired();
             });
 
             modelBuilder.Entity<MigrationHistory>(entity =>

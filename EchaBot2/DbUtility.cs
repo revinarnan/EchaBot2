@@ -13,6 +13,18 @@ namespace EchaBot2
             DbContext = new ApplicationDbContext();
         }
 
+        public async Task SaveChangesAsync()
+        {
+            try
+            {
+                await DbContext.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+        }
+
         public async Task InsertEmailQuestion(ChatBotEmailQuestion emailQuestions)
         {
             try

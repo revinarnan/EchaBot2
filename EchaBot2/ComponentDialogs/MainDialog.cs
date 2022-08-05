@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace EchaBot2.ComponentDialogs
             AddDialog(academicWaterfall);
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                ActStepAsync,
+                InitialStepAsync,
                 FinalStepAsync
             }));
 
@@ -37,7 +38,7 @@ namespace EchaBot2.ComponentDialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
             var topIntent = luisResult.Intents.First().Key;
@@ -68,6 +69,10 @@ namespace EchaBot2.ComponentDialogs
             {
                 var messageText = "Silakan ketik '@staff' untuk menghubungkan dengan staff akademik. Tunggu permintaanmu diterima ya.";
                 var message = MessageFactory.Text(messageText, messageText, InputHints.ExpectingInput);
+                message.SuggestedActions = new SuggestedActions
+                {
+                    Actions = new List<CardAction> { new() { Title = "@Staff", Type = ActionTypes.ImBack, Value = "@staff" } }
+                };
 
                 var emailQuestions = new ChatBotEmailQuestion
                 {

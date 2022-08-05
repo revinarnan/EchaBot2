@@ -1,12 +1,15 @@
 ﻿using EchaBot2.CommandHandling;
 using EchaBot2.Resources;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Underscore.Bot.MessageRouting;
 using Underscore.Bot.MessageRouting.DataStore;
 using Underscore.Bot.MessageRouting.Results;
+using Activity = Microsoft.Bot.Schema.Activity;
 
 namespace EchaBot2.MessageRouting
 {
@@ -64,7 +67,7 @@ namespace EchaBot2.MessageRouting
 
             if (connectionRequest == null || connectionRequest.Requestor == null)
             {
-                System.Diagnostics.Debug.WriteLine("No client to inform about the connection request result");
+                Debug.WriteLine("No client to inform about the connection request result");
                 return false;
             }
 
@@ -130,9 +133,6 @@ namespace EchaBot2.MessageRouting
                     }
 
                     return true;
-
-                default:
-                    break;
             }
 
             return false;
@@ -176,10 +176,28 @@ namespace EchaBot2.MessageRouting
                     {
                         if (connection.ConversationReference1 != null)
                         {
+                            var replyText = MessageFactory.Text(Strings.NotifyOwnerSuggestedAction);
+                            replyText.SuggestedActions = new SuggestedActions
+                            {
+                                Actions = new List<CardAction>
+                                {
+                                    new()
+                                    {
+                                        Title = "Accept Request", Type = ActionTypes.ImBack, Value = "command AcceptRequest"
+                                    },
+                                    new()
+                                    {
+                                        Title = "Unwatch", Type = ActionTypes.ImBack, Value = "command Unwatch"
+                                    }
+                                }
+                            };
+
                             await _messageRouter.SendMessageAsync(
                                 connection.ConversationReference1,
                                 string.Format(Strings.NotifyOwnerDisconnected,
                                     GetNameOrId(connection.ConversationReference2)));
+                            await _messageRouter.SendMessageAsync(
+                                connection.ConversationReference1, replyText);
                         }
 
                         if (connection.ConversationReference2 != null)
@@ -202,9 +220,6 @@ namespace EchaBot2.MessageRouting
                     }
 
                     return true;
-
-                default:
-                    break;
             }
 
             return false;
@@ -240,9 +255,6 @@ namespace EchaBot2.MessageRouting
                     }
 
                     return true;
-
-                default:
-                    break;
             }
 
             return false;

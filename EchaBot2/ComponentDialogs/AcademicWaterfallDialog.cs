@@ -2,7 +2,7 @@
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -88,24 +88,31 @@ namespace EchaBot2.ComponentDialogs
             var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
 
             var convId = activity.Conversation.Id;
-            var index = convId.IndexOf("|", StringComparison.Ordinal);
-            if (index >= 0)
-                convId = convId.Substring(0, index);
 
             emailQuestion.Email = (string)stepContext.Result;
             emailQuestion.Id = convId;
             emailQuestion.IsAnswered = false;
 
-            var chatHistory = new ChatHistory
+            var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId, cancellationToken);
+            if (chatHistoryInDb == null)
             {
-                UserId = activity.From.Id,
-                IsDoneOnBot = true,
-                IsDoneOnEmail = false,
-                IsDoneOnLiveChat = false,
-                ChatHistoryFileName = convId
-            };
+                var chatHistory = new ChatHistory
+                {
+                    UserId = activity.From.Id,
+                    IsDoneOnBot = true,
+                    IsDoneOnEmail = false,
+                    IsDoneOnLiveChat = false,
+                    ChatHistoryFileName = convId
+                };
 
-            await _dbUtility.InsertChatHistory(chatHistory);
+                await _dbUtility.InsertChatHistory(chatHistory);
+            }
+            else
+            {
+                chatHistoryInDb.IsDoneOnBot = true;
+                await _dbUtility.SaveChangesAsync();
+            }
+
 
             var message = $"Email kamu adalah {((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Email}, " +
                           $"dan pertanyaan kamu adalah (\"{((ChatBotEmailQuestion)stepContext.Values[EmailQuestion]).Question}\").";

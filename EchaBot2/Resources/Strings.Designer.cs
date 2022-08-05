@@ -635,5 +635,12 @@ namespace EchaBot2.Resources {
                 return ResourceManager.GetString("Users", resourceCulture);
             }
         }
+        
+        internal static string NotifyOwnerSuggestedAction
+        {
+            get {
+                return ResourceManager.GetString("NotifyOwnerSuggestedAction", resourceCulture);
+            }
+        }
     }
 }

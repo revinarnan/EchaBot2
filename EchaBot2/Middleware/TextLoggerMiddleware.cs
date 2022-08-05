@@ -34,7 +34,7 @@ namespace EchaBot2.Middleware
 
         public async Task LogActivityAsync(IActivity activity)
         {
-            if (activity.Type is ActivityTypes.Message or ActivityTypes.Handoff)
+            if (activity.Type is ActivityTypes.Message)
             {
                 // Preserve message input
                 var logText = $"{activity.From.Name}: {activity.AsMessageActivity().Text}";
@@ -46,9 +46,7 @@ namespace EchaBot2.Middleware
                     // Preserve document file name
                     var dateStamp = DateTime.UtcNow.AddHours(7).ToString("dddd, dd MMMM yyyy hh:mm tt");
                     var convId = activity.Conversation.Id;
-                    int index = convId.IndexOf("|", StringComparison.Ordinal);
-                    if (index >= 0)
-                        convId = convId.Substring(0, index);
+
                     var fileName = $"{convId}";
 
                     // adjust delay to save in storage
