@@ -1,6 +1,7 @@
 ﻿using EchaBot2.MessageRouting;
 using EchaBot2.Models;
 using EchaBot2.Resources;
+using EchaBot2.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -211,6 +212,11 @@ namespace EchaBot2.CommandHandling
                             {
                                 replyActivity = activity.CreateReply();
                                 replyActivity.Text = Strings.FailedToRejectPendingRequests;
+                            }
+                            else
+                            {
+                                replyActivity = activity.CreateReply();
+                                replyActivity.Text = Strings.RejectAllPendingRequest;
                             }
                         }
                         else if (command.Parameters.Count > 1)

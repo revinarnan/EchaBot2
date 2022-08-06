@@ -642,5 +642,12 @@ namespace EchaBot2.Resources {
                 return ResourceManager.GetString("NotifyOwnerSuggestedAction", resourceCulture);
             }
         }
+        
+        internal static string RejectAllPendingRequest
+        {
+            get {
+                return ResourceManager.GetString("RejectAllPendingRequest", resourceCulture);
+            }
+        }
     }
 }

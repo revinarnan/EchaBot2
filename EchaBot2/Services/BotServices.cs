@@ -2,7 +2,7 @@
 using Microsoft.Bot.Builder.AI.QnA;
 using Microsoft.Extensions.Configuration;
 
-namespace EchaBot2
+namespace EchaBot2.Services
 {
     public class BotServices : IBotServices
     {

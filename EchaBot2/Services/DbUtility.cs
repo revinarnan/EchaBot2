@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace EchaBot2
+namespace EchaBot2.Services
 {
     public class DbUtility
     {

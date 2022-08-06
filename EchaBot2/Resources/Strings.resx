@@ -312,4 +312,7 @@
   <data name="NotifyOwnerSuggestedAction" xml:space="preserve">
     <value>Jangan lupa ketik "command Unwatch" jika ingin beralih ke halaman lain atau "command AcceptRequest" untuk menerima permintaan baru</value>
   </data>
+  <data name="RejectAllPendingRequest" xml:space="preserve">
+    <value>Semua permintaan ditolak</value>
+  </data>
 </root>

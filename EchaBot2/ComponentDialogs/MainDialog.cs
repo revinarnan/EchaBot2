@@ -1,5 +1,7 @@
 ﻿using EchaBot2.Models;
+using EchaBot2.Services;
 using Microsoft.Bot.Builder;
+using Microsoft.Bot.Builder.AI.Luis;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
@@ -41,7 +43,7 @@ namespace EchaBot2.ComponentDialogs
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
-            var topIntent = luisResult.Intents.First().Key;
+            var topIntent = LuisRecognizer.TopIntent(luisResult, "None", 0.8);
             if (stepContext.Context.Activity.Text is not ("Yes" or "No") &&
                 !stepContext.Context.Activity.Text.Contains("@"))
             {

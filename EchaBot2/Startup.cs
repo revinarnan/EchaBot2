@@ -6,6 +6,7 @@
 using EchaBot2.Bots;
 using EchaBot2.ComponentDialogs;
 using EchaBot2.Middleware;
+using EchaBot2.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;

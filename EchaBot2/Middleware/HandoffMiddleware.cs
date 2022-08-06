@@ -1,5 +1,6 @@
 ﻿using EchaBot2.CommandHandling;
 using EchaBot2.MessageRouting;
+using EchaBot2.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
