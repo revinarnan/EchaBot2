@@ -6,7 +6,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -43,20 +42,22 @@ namespace EchaBot2.ComponentDialogs
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
-            var topIntent = LuisRecognizer.TopIntent(luisResult, "None", 0.8);
+            var questionIntent = LuisRecognizer.TopIntent(luisResult, "None", 0.8);
+            var questionText = luisResult.Text;
+
             if (stepContext.Context.Activity.Text is not ("Yes" or "No") &&
                 !stepContext.Context.Activity.Text.Contains("@"))
             {
-                switch (topIntent)
+                switch (questionIntent)
                 {
                     case "Academic":
-                        await ProcessAcademicResponseAsync(stepContext.Context, cancellationToken);
+                        await ProcessAcademicResponseAsync(stepContext.Context, questionText, cancellationToken);
                         return await stepContext.BeginDialogAsync(nameof(AcademicWaterfallDialog), null, cancellationToken);
                     case "None":
                         await ShowLuisResult(stepContext.Context, cancellationToken);
                         break;
                     default:
-                        await ProcessChitchatResponseAsync(stepContext.Context, cancellationToken);
+                        await ProcessChitchatResponseAsync(stepContext.Context, questionIntent, cancellationToken);
                         break;
                 }
             }
@@ -96,50 +97,25 @@ namespace EchaBot2.ComponentDialogs
             return await stepContext.EndDialogAsync(null, cancellationToken);
         }
 
-        private async Task ProcessChitchatResponseAsync(ITurnContext context, CancellationToken cancellationToken)
+        private async Task ProcessChitchatResponseAsync(ITurnContext context, string questionIntent, CancellationToken cancellationToken)
         {
             Logger.LogInformation("ProcessChitchatResponseAsync");
 
-            var results = await _botServices.ChitchatKb.GetAnswersAsync(context);
-
-            if (results.Any())
-            {
-                if (results.First().Answer.Equals("No good match found in KB."))
-                {
-                    await context.SendActivityAsync(MessageFactory.Text("Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain"), cancellationToken);
-                }
-                else
-                {
-                    await context.SendActivityAsync(MessageFactory.Text(results.First().Answer), cancellationToken);
-                }
-            }
-            else
-            {
-                await context.SendActivityAsync(MessageFactory.Text("Maaf, saya belum bisa menjawab."), cancellationToken);
-            }
+            var chitchatAnswer = await _botServices.GetChitchatAnswer(questionIntent);
+            await context.SendActivityAsync(MessageFactory.Text(chitchatAnswer), cancellationToken);
         }
 
-        private async Task ProcessAcademicResponseAsync(ITurnContext context, CancellationToken cancellationToken)
+        private async Task ProcessAcademicResponseAsync(ITurnContext context, string questionText, CancellationToken cancellationToken)
         {
             Logger.LogInformation("ProcessAcademicResponseAsync");
 
-            var results = await _botServices.AcademicKb.GetAnswersAsync(context);
+            var academicAnswer = await _botServices.GetAcademicAnswer(questionText);
+            if (academicAnswer.Equals("No good match found in KB."))
+            {
+                academicAnswer = "Maaf, informasi tidak ditemukan. Mohon gunakan kata lain.";
+            }
 
-            if (results.Any())
-            {
-                if (results.First().Answer.Equals("No good match found in KB."))
-                {
-                    await context.SendActivityAsync(MessageFactory.Text("Maaf, informasi tidak ditemukan. Mohon gunakan kata lain."), cancellationToken);
-                }
-                else
-                {
-                    await context.SendActivityAsync(MessageFactory.Text(results.First().Answer), cancellationToken);
-                }
-            }
-            else
-            {
-                await context.SendActivityAsync(MessageFactory.Text("Maaf, saya belum bisa menjawab."), cancellationToken);
-            }
+            await context.SendActivityAsync(MessageFactory.Text(academicAnswer), cancellationToken);
         }
 
         private async Task ShowLuisResult(ITurnContext context, CancellationToken cancellationToken)
