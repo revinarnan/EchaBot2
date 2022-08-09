@@ -46,6 +46,9 @@ namespace EchaBot2.Middleware
                     // Preserve document file name
                     var dateStamp = DateTime.UtcNow.AddHours(7).ToString("dddd, dd MMMM yyyy hh:mm tt");
                     var convId = activity.Conversation.Id;
+                    int index = convId.IndexOf("|", StringComparison.Ordinal);
+                    if (index >= 0)
+                        convId = convId.Substring(0, index);
 
                     var fileName = $"{convId}";
 

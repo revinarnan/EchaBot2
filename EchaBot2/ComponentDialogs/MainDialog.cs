@@ -42,7 +42,7 @@ namespace EchaBot2.ComponentDialogs
         private async Task<DialogTurnResult> InitialStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var luisResult = await _botServices.LuisIntentRecognizer.RecognizeAsync(stepContext, stepContext.Context.Activity, cancellationToken);
-            var questionIntent = LuisRecognizer.TopIntent(luisResult, "None", 0.8);
+            var questionIntent = LuisRecognizer.TopIntent(luisResult);
             var questionText = luisResult.Text;
 
             if (stepContext.Context.Activity.Text is not ("Yes" or "No") &&
@@ -120,7 +120,7 @@ namespace EchaBot2.ComponentDialogs
 
         private async Task ShowLuisResult(ITurnContext context, CancellationToken cancellationToken)
         {
-            await context.SendActivityAsync(MessageFactory.Text("Maaf saya belum mengerti yang kamu katakan, saya harus belajar lagi."), cancellationToken);
+            await context.SendActivityAsync(MessageFactory.Text("Maaf saya belum mengerti yang kamu katakan, coba gunakan kata lain."), cancellationToken);
         }
     }
 }

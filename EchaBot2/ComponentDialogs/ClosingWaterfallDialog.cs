@@ -3,6 +3,7 @@ using EchaBot2.Services;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -39,6 +40,9 @@ namespace EchaBot2.ComponentDialogs
         {
             var activity = stepContext.Context.Activity;
             var convId = activity.Conversation.Id;
+            int index = convId.IndexOf("|", StringComparison.Ordinal);
+            if (index >= 0)
+                convId = convId.Substring(0, index);
 
             if (!(bool)stepContext.Result)
             {

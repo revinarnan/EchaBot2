@@ -73,41 +73,50 @@ namespace EchaBot2.CommandHandling
             Activity replyActivity = null;
             var sender = MessageRouter.CreateSenderConversationReference(activity);
 
-            switch (command.BaseCommand)
+            // Add the sender's channel/conversation into the list of aggregation channels
+            var isPermittedAggregationChannel = false;
+            if (_permittedAggregationChannels is { Count: > 0 })
             {
-                case Commands.ShowOptions:
-                    // Present all command options in a card
-                    replyActivity = CommandCardFactory.AddCardToActivity(
-                            activity.CreateReply(), CommandCardFactory.CreateCommandOptionsCard(activity.Recipient?.Name));
-                    wasHandled = true;
-                    break;
-
-                case Commands.Watch:
-                    // Add the sender's channel/conversation into the list of aggregation channels
-                    var isPermittedAggregationChannel = false;
-
-                    if (_permittedAggregationChannels is { Count: > 0 })
-                    {
-                        foreach (var permittedAggregationChannel in _permittedAggregationChannels)
-                        {
-                            if (!string.IsNullOrWhiteSpace(activity.ChannelId)
-                                && activity.ChannelId.ToLower().Equals(permittedAggregationChannel.ToLower()))
-                            {
-                                isPermittedAggregationChannel = true;
-                                break;
-                            }
-                        }
-                    }
-                    else
+                foreach (var permittedAggregationChannel in _permittedAggregationChannels)
+                {
+                    if (!string.IsNullOrWhiteSpace(activity.ChannelId)
+                        && activity.ChannelId.ToLower().Equals(permittedAggregationChannel.ToLower()))
                     {
                         isPermittedAggregationChannel = true;
+                        break;
                     }
+                }
+            }
+            else
+            {
+                isPermittedAggregationChannel = true;
+            }
 
-                    if (isPermittedAggregationChannel)
-                    {
+            if (!isPermittedAggregationChannel)
+            {
+                replyActivity = activity.CreateReply(
+                    string.Format(Strings.NotPermittedAggregationChannel, activity.ChannelId));
+                wasHandled = true;
+            }
+            else
+            {
+                // check sender connection
+                var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
+
+                switch (command.BaseCommand)
+                {
+                    case Commands.ShowOptions:
+                        // Present all command options in a card
+                        replyActivity = CommandCardFactory.AddCardToActivity(
+                                activity.CreateReply(), CommandCardFactory.CreateCommandOptionsCard(activity.Recipient?.Name));
+                        wasHandled = true;
+                        break;
+
+                    case Commands.Watch:
+
                         var aggregationChannelToAdd = new ConversationReference(
-                            null, null, null,
-                            activity.Conversation, activity.ChannelId, activity.ServiceUrl);
+                                null, null, null,
+                                activity.Conversation, activity.ChannelId, activity.ServiceUrl);
 
                         var modifyRoutingDataResult =
                             _messageRouter.RoutingDataManager.AddAggregationChannel(aggregationChannelToAdd);
@@ -125,197 +134,223 @@ namespace EchaBot2.CommandHandling
                             replyActivity = activity.CreateReply(
                                 string.Format(Strings.FailedToSetAggregationChannel, modifyRoutingDataResult.ErrorMessage));
                         }
-                    }
-                    else
-                    {
-                        replyActivity = activity.CreateReply(
-                            string.Format(Strings.NotPermittedAggregationChannel, activity.ChannelId));
-                    }
 
-                    wasHandled = true;
-                    break;
+                        wasHandled = true;
+                        break;
 
-                case Commands.Unwatch:
-                    // Remove the sender's channel/conversation from the list of aggregation channels
-                    if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
-                    {
-                        var aggregationChannelToRemove = new ConversationReference(
-                                null, null, null,
-                                activity.Conversation, activity.ChannelId, activity.ServiceUrl);
-
-                        if (_messageRouter.RoutingDataManager.RemoveAggregationChannel(aggregationChannelToRemove))
+                    case Commands.Unwatch:
+                        if (connectionReference == null)
                         {
-                            replyActivity = activity.CreateReply(Strings.AggregationChannelRemoved);
+                            // Remove the sender's channel/conversation from the list of aggregation channels
+                            if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
+                            {
+                                var aggregationChannelToRemove = new ConversationReference(
+                                    null, null, null,
+                                    activity.Conversation, activity.ChannelId, activity.ServiceUrl);
+
+                                if (_messageRouter.RoutingDataManager.RemoveAggregationChannel(aggregationChannelToRemove))
+                                {
+                                    replyActivity = activity.CreateReply(Strings.AggregationChannelRemoved);
+                                }
+                                else
+                                {
+                                    replyActivity = activity.CreateReply(Strings.FailedToRemoveAggregationChannel);
+                                }
+                            }
                         }
                         else
                         {
-                            replyActivity = activity.CreateReply(Strings.FailedToRemoveAggregationChannel);
+                            replyActivity = activity.CreateReply(Strings.HandoffActivityIsOnGoing);
                         }
 
                         wasHandled = true;
-                    }
+                        break;
 
-                    break;
+                    case Commands.GetRequests:
+                        var connectionRequests =
+                            _messageRouter.RoutingDataManager.GetConnectionRequests();
 
-                case Commands.GetRequests:
-                    var connectionRequests =
-                        _messageRouter.RoutingDataManager.GetConnectionRequests();
+                        replyActivity = activity.CreateReply();
 
-                    replyActivity = activity.CreateReply();
-
-                    if (connectionRequests.Count == 0)
-                    {
-                        replyActivity.Text = Strings.NoPendingRequests;
-                    }
-                    else
-                    {
-                        replyActivity.Attachments = CommandCardFactory.CreateMultipleConnectionRequestCards(
-                            connectionRequests, activity.Recipient?.Name);
-                    }
-
-                    replyActivity.ChannelData = JsonConvert.SerializeObject(connectionRequests);
-                    wasHandled = true;
-                    break;
-
-                case Commands.AcceptRequest:
-                case Commands.RejectRequest:
-                    // Accept/reject connection request
-                    var doAccept = (command.BaseCommand == Commands.AcceptRequest);
-
-                    if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
-                    {
                         // The sender is associated with the aggregation and has the right to accept/reject
-                        if (command.Parameters.Count == 0)
+                        if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
                         {
-                            replyActivity = activity.CreateReply();
-
-                            connectionRequests =
-                                _messageRouter.RoutingDataManager.GetConnectionRequests();
-
                             if (connectionRequests.Count == 0)
                             {
                                 replyActivity.Text = Strings.NoPendingRequests;
                             }
                             else
                             {
-                                replyActivity = CommandCardFactory.AddCardToActivity(
-                                    replyActivity, CommandCardFactory.CreateMultiConnectionRequestCard(
-                                        connectionRequests, doAccept, activity.Recipient?.Name));
+                                replyActivity.Attachments = CommandCardFactory.CreateMultipleConnectionRequestCards(
+                                    connectionRequests, activity.Recipient?.Name);
                             }
-                        }
-                        else if (!doAccept
-                            && command.Parameters[0].Equals(Command.CommandParameterAll))
-                        {
-                            // Reject all pending connection requests
-                            if (!await _connectionRequestHandler.RejectAllPendingRequestsAsync(
-                                    _messageRouter, _messageRouterResultHandler))
-                            {
-                                replyActivity = activity.CreateReply();
-                                replyActivity.Text = Strings.FailedToRejectPendingRequests;
-                            }
-                            else
-                            {
-                                replyActivity = activity.CreateReply();
-                                replyActivity.Text = Strings.RejectAllPendingRequest;
-                            }
-                        }
-                        else if (command.Parameters.Count > 1)
-                        {
-                            // Try to accept/reject the specified connection request
-                            var requestorChannelAccount =
-                                new ChannelAccount(command.Parameters[0]);
-                            var requestorConversationAccount =
-                                new ConversationAccount(null, null, command.Parameters[1]);
 
-                            var messageRouterResult =
-                                await _connectionRequestHandler.AcceptOrRejectRequestAsync(
-                                    _messageRouter, _messageRouterResultHandler, sender, doAccept,
-                                    requestorChannelAccount, requestorConversationAccount);
-
-                            await _messageRouterResultHandler.HandleResultAsync(messageRouterResult);
+                            replyActivity.ChannelData = JsonConvert.SerializeObject(connectionRequests);
                         }
                         else
                         {
-                            replyActivity = activity.CreateReply(Strings.InvalidOrMissingCommandParameter);
-                        }
-                    }
-#if DEBUG
-                    // We shouldn't respond to command attempts by regular users, but I guess
-                    // it's okay when debugging
-                    //else
-                    //{
-                    //    replyActivity = activity.CreateReply(Strings.ConnectionRequestResponseNotAllowed);
-                    //}
-#endif
-
-                    wasHandled = true;
-                    break;
-
-                case Commands.Disconnect:
-                    // End the 1:1 conversation(s)
-                    var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
-                    var disconnectResults = _messageRouter.Disconnect(sender);
-
-                    if (disconnectResults is { Count: > 0 })
-                    {
-                        var convId = connectionReference.ConversationReference2.Conversation.Id;
-                        var userId = connectionReference.ConversationReference2.User.Id;
-
-                        var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId);
-                        var emailQuestionInDb = await _dbUtility.DbContext.ChatBotEmailQuestions.SingleOrDefaultAsync(e => e.Id == convId);
-
-                        // if data exist in db, update value
-                        if (chatHistoryInDb != null && emailQuestionInDb != null)
-                        {
-                            emailQuestionInDb.IsAnswered = true;
-                            chatHistoryInDb.IsDoneOnLiveChat = true;
-
-                            await _dbUtility.SaveChangesAsync();
-                        }
-
-                        // if data didn't exist in db, create new record
-                        if (chatHistoryInDb == null)
-                        {
-                            var chatHistory = new ChatHistory
+                            replyActivity.Text = Strings.NotifyOwnerActivateWatchCommand;
+                            replyActivity.SuggestedActions = new SuggestedActions
                             {
-                                UserId = userId,
-                                IsDoneOnBot = false,
-                                IsDoneOnEmail = false,
-                                IsDoneOnLiveChat = true,
-                                ChatHistoryFileName = convId
+                                Actions = new List<CardAction> { new() { Title = "Watch", Type = ActionTypes.ImBack, Value = "command Watch" } }
                             };
-
-                            await _dbUtility.InsertChatHistory(chatHistory);
-                        }
-
-                        foreach (var disconnectResult in disconnectResults)
-                        {
-                            await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
                         }
 
                         wasHandled = true;
-                    }
+                        break;
 
-                    break;
+                    case Commands.AcceptRequest:
+                    case Commands.RejectRequest:
+                        // Accept/reject connection request
+                        var doAccept = (command.BaseCommand == Commands.AcceptRequest);
 
-                case Commands.Help:
-                    replyActivity = activity.CreateReply();
-                    replyActivity.Text = "Penjelasan perintah Bot sebagai Admin:\n\n" +
-                                         "1. [ShowOptions] menampilkan perintah-perintah bagi Bot.\n" +
-                                         "2. [Watch] menjadikan saluran saat ini sebagai saluran agregasi permintaan yang masuk.\n" +
-                                         "3. [Unwatch] menghapus saluran saat ini dari daftar saluran agregasi.\n" +
-                                         "4. [GetRequests] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
-                                         "5. [AcceptRequest <user ID>] menerima permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
-                                         "6. [RejectRequest <user ID>] menolak permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
-                                         "7. [Disconnect] mengakhiri percakapan saat ini dengan pengguna.\n" +
-                                         "\n*Jika tidak ada ID pengguna yang dimasukkan, bot akan membuat kartu yang bagus dengan tombol terima/tolak karena ada permintaan koneksi yang tertunda.";
+                        replyActivity = activity.CreateReply();
 
-                    wasHandled = true;
-                    break;
+                        // The sender is associated with the aggregation and has the right to accept/reject
+                        if (_messageRouter.RoutingDataManager.IsAssociatedWithAggregation(sender))
+                        {
+                            if (command.Parameters.Count == 0)
+                            {
+                                connectionRequests =
+                                    _messageRouter.RoutingDataManager.GetConnectionRequests();
 
-                default:
-                    replyActivity = activity.CreateReply(string.Format(Strings.CommandNotRecognized, command.BaseCommand));
-                    break;
+                                if (connectionRequests.Count == 0)
+                                {
+                                    replyActivity.Text = Strings.NoPendingRequests;
+                                }
+                                else
+                                {
+                                    replyActivity = CommandCardFactory.AddCardToActivity(
+                                        replyActivity, CommandCardFactory.CreateMultiConnectionRequestCard(
+                                            connectionRequests, doAccept, activity.Recipient?.Name));
+                                }
+                            }
+                            else if (!doAccept
+                                && command.Parameters[0].Equals(Command.CommandParameterAll))
+                            {
+                                // Reject all pending connection requests
+                                if (!await _connectionRequestHandler.RejectAllPendingRequestsAsync(
+                                        _messageRouter, _messageRouterResultHandler))
+                                {
+                                    replyActivity = activity.CreateReply();
+                                    replyActivity.Text = Strings.FailedToRejectPendingRequests;
+                                }
+                                else
+                                {
+                                    replyActivity = activity.CreateReply();
+                                    replyActivity.Text = Strings.RejectAllPendingRequest;
+                                }
+                            }
+                            else if (command.Parameters.Count > 1)
+                            {
+                                // check sender if accept a new connection request and already in live chat activity
+                                if (doAccept && connectionReference != null)
+                                {
+                                    replyActivity = activity.CreateReply(Strings.HandoffActivityIsOnGoing);
+                                }
+                                else
+                                {
+                                    // Try to accept/reject the specified connection request
+                                    var requestorChannelAccount =
+                                        new ChannelAccount(command.Parameters[0]);
+                                    var requestorConversationAccount =
+                                        new ConversationAccount(null, null, command.Parameters[1]);
+
+                                    var messageRouterResult =
+                                        await _connectionRequestHandler.AcceptOrRejectRequestAsync(
+                                            _messageRouter, _messageRouterResultHandler, sender, doAccept,
+                                            requestorChannelAccount, requestorConversationAccount);
+
+                                    await _messageRouterResultHandler.HandleResultAsync(messageRouterResult);
+                                }
+                            }
+                            else
+                            {
+                                replyActivity = activity.CreateReply(Strings.InvalidOrMissingCommandParameter);
+                            }
+                        }
+                        else // send message to activate watch command first
+                        {
+                            replyActivity.Text = Strings.NotifyOwnerActivateWatchCommand;
+                            replyActivity.SuggestedActions = new SuggestedActions
+                            {
+                                Actions = new List<CardAction> { new() { Title = "Watch", Type = ActionTypes.ImBack, Value = "command Watch" } }
+                            };
+                        }
+
+                        wasHandled = true;
+                        break;
+
+                    case Commands.Disconnect:
+                        // End the 1:1 conversation(s)
+                        //TODO var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
+                        var disconnectResults = _messageRouter.Disconnect(sender);
+
+                        if (disconnectResults is { Count: > 0 })
+                        {
+                            var convId = connectionReference.ConversationReference2.Conversation.Id;
+                            int index = convId.IndexOf("|", StringComparison.Ordinal);
+                            if (index >= 0)
+                                convId = convId.Substring(0, index);
+
+                            var userId = connectionReference.ConversationReference2.User.Id;
+
+                            var chatHistoryInDb = await _dbUtility.DbContext.ChatHistories.SingleOrDefaultAsync(c => c.ChatHistoryFileName == convId);
+                            var emailQuestionInDb = await _dbUtility.DbContext.ChatBotEmailQuestions.SingleOrDefaultAsync(e => e.Id == convId);
+
+                            // if data exist in db, update value
+                            if (chatHistoryInDb != null && emailQuestionInDb != null)
+                            {
+                                emailQuestionInDb.IsAnswered = true;
+                                chatHistoryInDb.IsDoneOnLiveChat = true;
+
+                                await _dbUtility.SaveChangesAsync();
+                            }
+
+                            // if data didn't exist in db, create new record
+                            if (chatHistoryInDb == null)
+                            {
+                                var chatHistory = new ChatHistory
+                                {
+                                    UserId = userId,
+                                    IsDoneOnBot = false,
+                                    IsDoneOnEmail = false,
+                                    IsDoneOnLiveChat = true,
+                                    ChatHistoryFileName = convId
+                                };
+
+                                await _dbUtility.InsertChatHistory(chatHistory);
+                            }
+
+                            foreach (var disconnectResult in disconnectResults)
+                            {
+                                await _messageRouterResultHandler.HandleResultAsync(disconnectResult);
+                            }
+
+                            wasHandled = true;
+                        }
+
+                        break;
+
+                    case Commands.Help:
+                        replyActivity = activity.CreateReply();
+                        replyActivity.Text = "Penjelasan perintah Bot sebagai Admin:\n\n" +
+                                             "1. [ShowOptions] menampilkan perintah-perintah bagi Bot.\n" +
+                                             "2. [Watch] menjadikan saluran saat ini sebagai saluran agregasi permintaan yang masuk.\n" +
+                                             "3. [Unwatch] menghapus saluran saat ini dari daftar saluran agregasi.\n" +
+                                             "4. [GetRequests] menghasilkan daftar semua permintaan koneksi yang tertunda.\n" +
+                                             "5. [AcceptRequest <user ID>] menerima permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
+                                             "6. [RejectRequest <user ID>] menolak permintaan koneksi percakapan dari pengguna yang diberikan.*\n" +
+                                             "7. [Disconnect] mengakhiri percakapan saat ini dengan pengguna.\n" +
+                                             "\n*Jika tidak ada ID pengguna yang dimasukkan, bot akan membuat kartu yang bagus dengan tombol terima/tolak karena ada permintaan koneksi yang tertunda.";
+
+                        wasHandled = true;
+                        break;
+
+                    default:
+                        replyActivity = activity.CreateReply(string.Format(Strings.CommandNotRecognized, command.BaseCommand));
+                        break;
+                }
             }
 
             if (replyActivity != null)

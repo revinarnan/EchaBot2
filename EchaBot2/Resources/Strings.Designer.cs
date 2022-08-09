@@ -649,5 +649,19 @@ namespace EchaBot2.Resources {
                 return ResourceManager.GetString("RejectAllPendingRequest", resourceCulture);
             }
         }
+        
+        internal static string NotifyOwnerActivateWatchCommand
+        {
+            get {
+                return ResourceManager.GetString("NotifyOwnerActivateWatchCommand", resourceCulture);
+            }
+        }
+        
+        internal static string HandoffActivityIsOnGoing
+        {
+            get {
+                return ResourceManager.GetString("HandoffActivityIsOnGoing", resourceCulture);
+            }
+        }
     }
 }

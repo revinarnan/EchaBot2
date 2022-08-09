@@ -307,12 +307,18 @@
     <value>Gagal menyetel saluran agregasi: {0}</value>
   </data>
   <data name="NotPermittedAggregationChannel" xml:space="preserve">
-    <value>{0} bukan saluran agregasi yang diizinkan</value>
+    <value>Saluran {0} tidak diziinkan untuk memberikan perintah</value>
   </data>
   <data name="NotifyOwnerSuggestedAction" xml:space="preserve">
     <value>Jangan lupa ketik "command Unwatch" jika ingin beralih ke halaman lain atau "command AcceptRequest" untuk menerima permintaan baru</value>
   </data>
   <data name="RejectAllPendingRequest" xml:space="preserve">
     <value>Semua permintaan ditolak</value>
+  </data>
+  <data name="NotifyOwnerActivateWatchCommand" xml:space="preserve">
+    <value>Anda harus mengaktifkan perintah "command Watch" terlebih dahulu untuk dapat menggunakan perintah ini</value>
+  </data>
+  <data name="HandoffActivityIsOnGoing" xml:space="preserve">
+    <value>Anda tidak dapat melakukan perintah tersebut di tengah aktivitas live chat</value>
   </data>
 </root>

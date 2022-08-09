@@ -4,6 +4,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -89,6 +90,9 @@ namespace EchaBot2.ComponentDialogs
             var emailQuestion = (ChatBotEmailQuestion)stepContext.Values[EmailQuestion];
 
             var convId = activity.Conversation.Id;
+            int index = convId.IndexOf("|", StringComparison.Ordinal);
+            if (index >= 0)
+                convId = convId.Substring(0, index);
 
             emailQuestion.Email = (string)stepContext.Result;
             emailQuestion.Id = convId;

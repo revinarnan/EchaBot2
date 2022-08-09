@@ -32,8 +32,8 @@ namespace EchaBot2
                 logger.LogError(exception, $"[OnTurnError] unhandled error : {exception.Message}");
 
                 // Send a message to the user
-                await turnContext.SendActivityAsync("The bot encountered an error or bug.");
-                await turnContext.SendActivityAsync("To continue to run this bot, please fix the bot source code.");
+                await turnContext.SendActivityAsync("Oops, sepertinya ada kumbang yang berterbangan.");
+                await turnContext.SendActivityAsync("Jika kamu menemukannya, mohon laporkan bug tersebut beserta skenario terjadinya ke email echabotagenthub@gmail.com, ya!");
 
                 if (conversationState != null)
                 {
