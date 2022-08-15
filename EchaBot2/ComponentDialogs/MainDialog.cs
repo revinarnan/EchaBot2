@@ -45,7 +45,7 @@ namespace EchaBot2.ComponentDialogs
             var questionIntent = LuisRecognizer.TopIntent(luisResult);
             var questionText = luisResult.Text;
 
-            if (stepContext.Context.Activity.Text is not ("Yes" or "No") &&
+            if (stepContext.Context.Activity.Text.ToLower() is not ("yes" or "no") &&
                 !stepContext.Context.Activity.Text.Contains("@"))
             {
                 switch (questionIntent)

@@ -64,37 +64,29 @@ namespace EchaBot2.Services
 
         public async Task<string> GetAcademicAnswer(string question)
         {
-            var uri = _academicUri;
             var questionJson = "{\"question\": \"" + question.Replace("\"", "'") + "\"}";
-
-            var response = await Post(uri, questionJson);
+            var response = await Post(_academicUri, questionJson);
 
             var answers = JsonConvert.DeserializeObject<QnAResponseDto>(response);
             if (answers != null && answers.Answers.Count > 0)
             {
                 return answers.Answers[0].Answer;
             }
-            else
-            {
-                return "Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain.";
-            }
+
+            return "Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain.";
         }
         public async Task<string> GetChitchatAnswer(string question)
         {
-            var uri = _chitchatUri;
             var questionJson = "{\"question\": \"" + question.Replace("\"", "'") + "\"}";
-
-            var response = await Post(uri, questionJson);
+            var response = await Post(_chitchatUri, questionJson);
 
             var answers = JsonConvert.DeserializeObject<QnAResponseDto>(response);
             if (answers != null && answers.Answers.Count > 0)
             {
                 return answers.Answers[0].Answer;
             }
-            else
-            {
-                return "Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain.";
-            }
+
+            return "Maaf, saya belum bisa menjawab. Silakan mengguankan kata lain.";
         }
     }
 }

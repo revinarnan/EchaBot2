@@ -113,7 +113,6 @@ namespace EchaBot2.CommandHandling
                         break;
 
                     case Commands.Watch:
-
                         var aggregationChannelToAdd = new ConversationReference(
                                 null, null, null,
                                 activity.Conversation, activity.ChannelId, activity.ServiceUrl);
@@ -283,7 +282,6 @@ namespace EchaBot2.CommandHandling
 
                     case Commands.Disconnect:
                         // End the 1:1 conversation(s)
-                        //TODO var connectionReference = _messageRouter.RoutingDataManager.FindConnection(sender);
                         var disconnectResults = _messageRouter.Disconnect(sender);
 
                         if (disconnectResults is { Count: > 0 })

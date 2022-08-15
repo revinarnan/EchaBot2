@@ -38,16 +38,6 @@ namespace EchaBot2
                 ConnectionMode = ConnectionMode.Gateway
             };
 
-            //var cosmosConfig = new CosmosDbPartitionedStorage(new CosmosDbPartitionedStorageOptions
-            //{
-            //    CosmosDbEndpoint = Configuration.GetValue<string>("CosmosDbEndpoint"),
-            //    AuthKey = Configuration.GetValue<string>("CosmosDbAuthKey"),
-            //    DatabaseId = Configuration.GetValue<string>("CosmosDbDatabaseId"),
-            //    ContainerId = Configuration.GetValue<string>("CosmosDbContainerId"),
-            //    CosmosClientOptions = client,
-            //    CompatibilityMode = false,
-            //});
-
             var stateBlobConfig = new BlobsStorage(
                 Configuration.GetValue<string>("AzureTableStorageConnectionString"),
                 Configuration.GetValue<string>("ConversationStateContainerName")
