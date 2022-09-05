@@ -190,7 +190,7 @@
     <value>Gagal menghapus saluran agregasi</value>
   </data>
   <data name="NoAgentsAvailable" xml:space="preserve">
-    <value>Maaf, tidak ada agen yang tersedia saat ini</value>
+    <value>Maaf, tidak ada admin yang tersedia saat ini</value>
   </data>
   <data name="NoAggregationChannel" xml:space="preserve">
     <value>Tidak ada saluran agregasi yang disiapkan</value>
@@ -205,7 +205,7 @@
     <value>Percakapan Anda dengan {0} telah berakhir</value>
   </data>
   <data name="NotifyClientDuplicateRequest" xml:space="preserve">
-    <value>Permintaan Anda telah diterima, harap tunggu agen untuk merespons</value>
+    <value>Permintaan Anda telah diterima, harap tunggu admin untuk merespons</value>
   </data>
   <data name="NotifyClientRequestRejected" xml:space="preserve">
     <value>Sayangnya permintaan Anda tidak dapat diproses</value>
